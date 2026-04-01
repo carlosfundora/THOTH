@@ -75,11 +75,24 @@ The interactive CLI test showed 3.4 t/s because the `--conversation` flag with `
 
 ---
 
+## Q1_0 + TQ3_0 Combined Port Benchmarks (True Run)
+
+After isolating GPU VRAM contention (clearing background audio/tool models), the combined configuration performed exceptionally well:
+
+| Config (Bonsai-4B Q1_0_G128) | Prompt (pp128) t/s | Generation (tg128) t/s | Flash Attention |
+|------------------------------|--------------------|------------------------|-----------------|
+| `-ctk f16 -ctv f16` (Baseline) | **603.44 ± 106.39** | **119.44 ± 0.60**      | ✅ Enabled |
+| `-ctk tq3_0 -ctv f16` (K-cache) | **588.29 ± 2.71**  | **114.92 ± 0.93**      | ❌ Disabled |
+
+**Finding**: The math overhead of unpacking the `TQ3_0` K-cache dynamically per token costs only **~5 t/s (~4%)** in raw generation speed, which is a massive win given the extreme VRAM bandwidth savings. Prompt processing speeds remain almost identical.
+
+---
+
 ## Architecture Compatibility Matrix
 
 | Feature | Standard Transformer | Hybrid RNN (LFM2) | Q1_0 Weights |
 |---------|--------------------|--------------------|------------|
-| TQ3_0 V-only KV cache | ✅ | ❌ | N/A |
+| TQ3_0 V-only KV cache | ✅ | ❌ Garbled | N/A |
 | Q1_0 GPU (MMVQ gen) | N/A | N/A | ✅ (any GPU) |
-| Q1_0 GPU (MMQ prompt) | N/A | N/A | ⚠️ Turing+ only, cuBLAS fallback otherwise |
-| Q1_0 + TQ3_0 combined | **Needs testing** | ❌ | **Next target** |
+| Q1_0 GPU (MMQ prompt) | N/A | N/A | ⚠️ Turing+, cuBLAS fallback |
+| Q1_0 + TQ3_0 combined | ✅ **Validated K-cache** | ❌ | ✅ **Works (4B @ 115 t/s)** |

@@ -64,7 +64,7 @@ See [smoke-tests-run001](engines/llama-turboquant/smoke-tests-run001.md) and [q1
 
 **LFM2 + TQ3_0 Test**: ❌ Garbled — TQ3_0 KV cache corrupts LFM2's hybrid RNN state. Only works with standard transformer attention (OpenCoder).
 
-**Fork merge needed**: TQ3_0 (turboquant fork) and Q1_0 GPU (PrismML fork) are in separate forks. Must port one direction to test the Q1_0+TQ3_0 combo.
+**Fork Merge Completed**: TQ3_0 KV cache has been successfully ported into the PrismML fork (`feature/tq3_0-kv-cache`). Combined `Q1_0` weight + `TQ3_0` K-cache + `F16` V-cache combo runs correctly on GPU, yielding bandwidth and VRAM reductions at the cost of `flash_attn` disabling for K-cache.
 
 **Failure modes to watch**:
 - HIP aperture violation → check HSA_OVERRIDE is set

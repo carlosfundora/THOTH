@@ -73,8 +73,7 @@ GPU speedup: **~172× over CPU** (Bonsai-4B). See [gpu-benchmark-results.md](gpu
 
 - [x] ~~Add HIP dequantize kernel for GPU inference~~ → Available via PrismML's native fork
 - [x] ~~Benchmark GPU-offloaded Q1_0 inference~~ → 121 t/s gen on Bonsai-4B
-- [ ] Port PrismML's Q1_0 GPU kernels (MMVQ/MMQ/convert) into llama-turboquant fork
-- [ ] OR: Port TQ3_0 KV cache support into PrismML fork
-- [ ] Test Q1_0 weights + TQ3_0 V-only KV cache combo
-- [ ] Add SIMD-optimized vec_dot (AVX2/NEON)
-- [ ] Rebuild Docker image with combined support
+- [x] Port TQ3_0 KV cache support into PrismML fork
+- [x] Test Q1_0 weights + TQ3_0 K-cache combo (115 t/s generation)
+- [ ] Add SIMD-optimized vec_dot (AVX2/NEON) for CPU fallback
+- [ ] Port validated TQ3_0 logic into SGLang (AMD branch)
