@@ -1,0 +1,67 @@
+run_id: 20260401T212234
+agent: hephaestion
+target: llama-turboquant
+target_path: /home/local/Projects/THOTH/forks/llama-turboquant
+container: thoth
+hardware:
+  gpu: AMD Radeon RX 6700 XT
+  compatibility_target: gfx1030
+environment:
+  HSA_OVERRIDE_GFX_VERSION: "10.3.0"
+  HIPCXX: "$(hipconfig -l)/clang"
+  HIP_PATH: "$(hipconfig -R)"
+build:
+  build_dir: /home/local/Projects/THOTH/forks/llama-turboquant/build-hephaestion-docker
+  cmake_args:
+    - -DGGML_HIP=ON
+    - -DGPU_TARGETS=gfx1030
+    - -DCMAKE_BUILD_TYPE=Release
+  status: success
+  log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212234_llama-turboquant_build.log
+artifacts:
+  llama_cli: /home/local/Projects/THOTH/forks/llama-turboquant/build-hephaestion-docker/bin/llama-cli
+  llama_server: /home/local/Projects/THOTH/forks/llama-turboquant/build-hephaestion-docker/bin/llama-server
+validations:
+  - name: bonsai_1bit_q1_smoke
+    status: success
+    model: /home/local/Projects/models/registry/PrismML/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212541_bonsai1.7b_q1_smoke.log
+  - name: opencoder_q4_speculative
+    status: success
+    main_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    draft_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212631_opencoder_q4_speculative.log
+  - name: opencoder_q4_speculative_tq3v_flash_attn
+    status: success
+    main_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    draft_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    flags:
+      - --flash-attn on
+      - --cache-type-v tq3_0
+      - --cache-type-v-draft tq3_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212715_opencoder_q4_speculative_tq3v_fa.log
+  - name: opencoder_q4_server_tq3v_flash_attn
+    status: success
+    main_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    draft_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    endpoint: http://127.0.0.1:18080
+    checks:
+      - GET /health => 200 {"status":"ok"}
+      - POST /completion => 200
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212928_opencoder_q4_server_tq3v_fa.log
+  - name: opencoder_q4_speculative_tq3v_invalid
+    status: fixed
+    expected_error: quantized V cache was requested, but this requires Flash Attention
+    observed_error_before_fix: segmentation fault after validation error
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T212652_opencoder_q4_speculative_tq3v.log
+  - name: opencoder_q4_speculative_tq3v_invalid_after_fix
+    status: success
+    expected_error: quantized V cache was requested, but this requires Flash Attention
+    expected_exit_status: 1
+    observed_behavior: clean failure without segmentation fault
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260401T213541_opencoder_q4_speculative_tq3v_invalid_fixed.log
+notes:
+  - This run validates draft-model speculative decoding, not a first-class EAGLE3 implementation.
+  - Quantized V-cache with tq3_0 requires Flash Attention in this binary.
+  - The first failed /completion entry in the server log was caused by malformed client JSON during the probe, not by model initialization.
+  - Patched tools/server/server-context.cpp to guard against null contexts after common_init_from_params() returns a loaded model but failed context.
