@@ -1,0 +1,54 @@
+# THOTH — Build & Runtime Artifacts
+build/
+*.o
+*.so
+*.a
+*.dylib
+*.dll
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+*.eggs/
+dist/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Model Weights (too large for git)
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.ot
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+*.tar.gz
+
+# Logs
+*.log
+logs/
+
+# Node (if any tooling)
+node_modules/

@@ -1,0 +1,92 @@
+[submodule "forks/turboquant"]
+	path = forks/turboquant
+	url = https://github.com/carlosfundora/turboquant.git
+	branch = main
+[submodule "forks/aotriton"]
+	path = forks/aotriton
+	url = https://github.com/carlosfundora/aotriton.git
+	branch = main
+[submodule "forks/ATLAS"]
+	path = forks/ATLAS
+	url = https://github.com/carlosfundora/ATLAS.git
+	branch = main
+[submodule "forks/bitpolar"]
+	path = forks/bitpolar
+	url = https://github.com/carlosfundora/bitpolar.git
+	branch = main
+[submodule "forks/dendrite"]
+	path = forks/dendrite
+	url = https://github.com/carlosfundora/dendrite.git
+	branch = main
+[submodule "forks/EAGLE"]
+	path = forks/EAGLE
+	url = https://github.com/carlosfundora/EAGLE.git
+	branch = main
+[submodule "forks/hip"]
+	path = forks/hip
+	url = https://github.com/carlosfundora/hip.git
+	branch = develop
+[submodule "forks/llama.cpp"]
+	path = forks/llama.cpp
+	url = https://github.com/carlosfundora/llama.cpp.git
+	branch = master
+[submodule "forks/llama-turboquant"]
+	path = forks/llama-turboquant
+	url = https://github.com/carlosfundora/llama-turboquant.git
+	branch = main
+[submodule "forks/Medusa"]
+	path = forks/Medusa
+	url = https://github.com/carlosfundora/Medusa.git
+	branch = main
+[submodule "forks/rocBLAS"]
+	path = forks/rocBLAS
+	url = https://github.com/carlosfundora/rocBLAS.git
+	branch = develop_deprecated
+[submodule "forks/rocm-install-on-linux"]
+	path = forks/rocm-install-on-linux
+	url = https://github.com/carlosfundora/rocm-install-on-linux.git
+	branch = develop
+[submodule "forks/rocm-libraries"]
+	path = forks/rocm-libraries
+	url = https://github.com/carlosfundora/rocm-libraries.git
+	branch = develop
+[submodule "forks/sglang"]
+	path = forks/sglang
+	url = https://github.com/carlosfundora/sglang.git
+	branch = main
+[submodule "forks/SpecForge"]
+	path = forks/SpecForge
+	url = https://github.com/carlosfundora/SpecForge.git
+	branch = main
+[submodule "forks/Tensile"]
+	path = forks/Tensile
+	url = https://github.com/carlosfundora/Tensile.git
+	branch = develop_deprecated
+[submodule "forks/TheRock"]
+	path = forks/TheRock
+	url = https://github.com/carlosfundora/TheRock.git
+	branch = main
+[submodule "forks/turboquant-1"]
+	path = forks/turboquant-1
+	url = https://github.com/carlosfundora/turboquant-1.git
+	branch = main
+[submodule "forks/turboquant-h2o-streamingllm"]
+	path = forks/turboquant-h2o-streamingllm
+	url = https://github.com/carlosfundora/turboquant-h2o-streamingllm.git
+	branch = main
+[submodule "forks/turboquant_plus"]
+	path = forks/turboquant_plus
+	url = https://github.com/carlosfundora/turboquant_plus.git
+	branch = main
+[submodule "forks/unsloth"]
+	path = forks/unsloth
+	url = https://github.com/carlosfundora/unsloth.git
+	branch = main
+[submodule "forks/vllm"]
+	path = forks/vllm
+	url = https://github.com/carlosfundora/vllm.git
+	branch = main
+[submodule "forks/vllm-turboquant"]
+	path = forks/vllm-turboquant
+	url = https://github.com/carlosfundora/vllm-turboquant.git
+	branch = main
