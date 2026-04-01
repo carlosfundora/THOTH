@@ -56,6 +56,16 @@ cmake --build . --config Release -j$(nproc)
 **Key finding**: V-only TQ3_0 is the winner config. K-only causes garbled output.
 See [smoke-tests-run001](engines/llama-turboquant/smoke-tests-run001.md) and [q1_0-port-results](engines/prismml-llama/q1_0-port-results.md).
 
+**GPU Bonsai Q1_0 Results** (2026-04-01, PrismML HIP build):
+- Bonsai-4B: **857 t/s prompt, 121 t/s generation** (540 MiB, fits 22× in VRAM)
+- Bonsai-8B: **454 t/s prompt, 92 t/s generation** (1.07 GiB)
+- Bonsai-1.7B: **2097 t/s prompt, 76 t/s generation** (231 MiB)
+- See [gpu-benchmark-results](engines/prismml-llama/gpu-benchmark-results.md)
+
+**LFM2 + TQ3_0 Test**: ❌ Garbled — TQ3_0 KV cache corrupts LFM2's hybrid RNN state. Only works with standard transformer attention (OpenCoder).
+
+**Fork merge needed**: TQ3_0 (turboquant fork) and Q1_0 GPU (PrismML fork) are in separate forks. Must port one direction to test the Q1_0+TQ3_0 combo.
+
 **Failure modes to watch**:
 - HIP aperture violation → check HSA_OVERRIDE is set
 - `invalid device function` → ROCm version mismatch

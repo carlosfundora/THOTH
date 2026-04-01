@@ -24,11 +24,23 @@ and remaps type IDs at load time.
 
 ## Test Results
 
+### CPU (llama-turboquant fork)
+
 | Model | Size | Type | Load | Output | Speed |
 |-------|------|------|------|--------|-------|
 | Bonsai-1.7B | 237 MB | Q1_0_G128 | ✅ | Coherent | 1.5 t/s (CPU) |
 | Bonsai-4B | 546 MB | Q1_0_G128 | ✅ | Coherent | 0.7 t/s (CPU) |
 | Bonsai-8B | 1.1 GB | Q1_0_G128 | ✅ | Coherent | 0.3 t/s (CPU) |
+
+### GPU (PrismML native HIP build — gfx1030, ROCm 7.2)
+
+| Model | Size | Params | pp512 (t/s) | tg128 (t/s) |
+|-------|------|--------|-------------|-------------|
+| Bonsai-1.7B | 231 MiB | 1.72B | **2096.87** | **75.60** |
+| Bonsai-4B | 540 MiB | 4.02B | **856.64** | **120.66** |
+| Bonsai-8B | 1.07 GiB | 8.19B | **453.90** | **91.56** |
+
+GPU speedup: **~172× over CPU** (Bonsai-4B). See [gpu-benchmark-results.md](gpu-benchmark-results.md).
 
 ### Sample Output (Bonsai-4B)
 
@@ -51,13 +63,18 @@ and remaps type IDs at load time.
 
 ## Known Limitations
 
-- **CPU-only**: No HIP/CUDA dequantize kernels → no GPU offload
-- **No SIMD**: Generic C vec_dot (scalar loops)
+- **turboquant fork**: Q1_0 has CPU-only dequantize — no GPU mat-mul kernels (MMVQ/MMQ)
+- **PrismML fork**: Full GPU support (MMVQ + dequant + convert), but no TQ3_0 KV cache
+- **MMQ on RDNA2**: PrismML's Q1_0 MMQ requires Turing MMA (SM≥75), falls back to cuBLAS on gfx1030 (still fast: 454-2097 t/s prompt processing due to trivial 1-bit dequant)
+- **No SIMD**: Generic C vec_dot in turboquant fork (scalar loops)
 - **Remap heuristic**: Depends on `general.file_type` KV metadata
 
 ## Next Steps
 
-- [ ] Add HIP dequantize kernel for GPU inference
+- [x] ~~Add HIP dequantize kernel for GPU inference~~ → Available via PrismML's native fork
+- [x] ~~Benchmark GPU-offloaded Q1_0 inference~~ → 121 t/s gen on Bonsai-4B
+- [ ] Port PrismML's Q1_0 GPU kernels (MMVQ/MMQ/convert) into llama-turboquant fork
+- [ ] OR: Port TQ3_0 KV cache support into PrismML fork
+- [ ] Test Q1_0 weights + TQ3_0 V-only KV cache combo
 - [ ] Add SIMD-optimized vec_dot (AVX2/NEON)
-- [ ] Rebuild Docker image with Q1_0 support
-- [ ] Benchmark GPU-offloaded Q1_0 inference
+- [ ] Rebuild Docker image with combined support
