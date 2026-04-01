@@ -109,3 +109,22 @@ tmp/
 *.xz
 *.bz2
 models
+
+# Symlinked forks (canonical clones live in Projects/forks/ — no duplication)
+forks/wandb
+forks/wandb-skills
+forks/llm-compressor
+forks/axolotl
+forks/peft
+forks/LlamaFactory
+forks/DistillKit
+forks/MergeKit
+forks/flash-attention
+forks/triton
+forks/ollama
+forks/aiter
+forks/torch_kmeans
+forks/bitsandbytes-rocm
+forks/transformers
+forks/accelerate
+forks/deepspeed
