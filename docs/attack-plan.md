@@ -112,27 +112,42 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 
 ---
 
-## Experiment 3: SGLang with TurboQuant (AMD Branch) ⭐ NEXT
+## Experiment 3: SGLang with TurboQuant / EAGLE / 1-bit ⭐ ACTIVE
 
-**Goal**: Port validated TurboQuant into SGLang's modular framework.
+**Goal**: Port validated TurboQuant into SGLang's modular framework, then use SGLang as the real EAGLE target.
 
 **Fork**: `forks/sglang`
-**PR**: #21628 — "[AMD] Add TurboQuant KV cache compression for ROCm"
+**TurboQuant donor PR**: `#21628` — "[AMD] Add TurboQuant KV cache compression for ROCm"
 
-**Why**: Cleanest modular structure. The `turboquant.py` hook pattern makes it easy to add gfx103x override.
+**Why**: SGLang is now the correct runtime for true EAGLE. llama.cpp proved the HIP and TurboQuant path, but it is not the final home for EAGLE.
 
-**Steps**:
-1. Cherry-pick or merge PR #21628 into the local fork
-2. Add gfx1030/1031 to the HIP test matrix
-3. Set `HSA_OVERRIDE_GFX_VERSION=10.3.0` in the test environment
-4. Run the 42 existing unit tests
-5. Run end-to-end with OpenCoder 8B
+**What is already done**:
+1. Cherry-pick PR `#21628` into the local fork
+2. Patch `sgl-kernel/setup_rocm.py` so the ROCm extension builds on `gfx1030` compatibility
+3. Add Prism GGUF compatibility shims for Bonsai `Q1_0` / `Q1_0_G128`
+4. Add HIP GGUF fallback behavior so ROCm can load quantized GGUF models without CUDA-only kernels
+5. Relax ROCm GGUF gating in model config so SGLang no longer rejects the format up front
+6. Stand up a Docker-first `.venv-hephaestion` inside the THOTH container for all SGLang runtime work
+
+**Current live validation track**:
+1. Bonsai 1.7B GGUF on SGLang for end-to-end 1-bit server proof
+2. OpenCoder 8B + OpenCoder 1.5B on SGLang with:
+   - `--speculative-algorithm EAGLE3`
+   - `--kv-cache-dtype tq4`
+   - ROCm gfx1030 compatibility
+3. Training follow-through after runtime proof, because OpenCoder still needs a real EAGLE draft artifact rather than a plain 1.5B instruct checkpoint
+
+**Current blockers actually observed**:
+- The first OpenCoder EAGLE3 load failure was a bad local weights checkout, not a ROCm port failure:
+  - `model-00002-of-00004.safetensors` was corrupt and had to be re-fetched from Git LFS
+- There is no local trained OpenCoder EAGLE checkpoint under `Projects/models`
+- Bonsai 1-bit SGLang serve needs a dedicated rerun with the GPU freed, because the concurrent OpenCoder load starved available VRAM
 
 **Success criteria**:
-- [ ] 42 unit tests pass on gfx1031
-- [ ] `--kv-cache-dtype tq4` works end-to-end
-- [ ] RadixAttention still works with TurboQuant KV
-- [ ] Memory savings match expectations (~25%)
+- [ ] Bonsai `Q1_0` serves end-to-end in SGLang on ROCm
+- [ ] OpenCoder `tq4` KV cache works end-to-end in SGLang
+- [ ] OpenCoder runtime reaches a true EAGLE-compatible serve path or fails with a precise model-structure constraint
+- [ ] Training path is ready to produce a real OpenCoder EAGLE draft artifact once runtime proof is stable
 
 ---
 
