@@ -26,9 +26,9 @@ and remaps type IDs at load time.
 
 | Model | Size | Type | Load | Output | Speed |
 |-------|------|------|------|--------|-------|
+| Bonsai-1.7B | 237 MB | Q1_0_G128 | ✅ | Coherent | 1.5 t/s (CPU) |
 | Bonsai-4B | 546 MB | Q1_0_G128 | ✅ | Coherent | 0.7 t/s (CPU) |
 | Bonsai-8B | 1.1 GB | Q1_0_G128 | ✅ | Coherent | 0.3 t/s (CPU) |
-| Bonsai-1.7B | 208 MB | — | ❌ | Corrupt GGUF | N/A |
 
 ### Sample Output (Bonsai-4B)
 
@@ -53,7 +53,6 @@ and remaps type IDs at load time.
 
 - **CPU-only**: No HIP/CUDA dequantize kernels → no GPU offload
 - **No SIMD**: Generic C vec_dot (scalar loops)
-- **Bonsai-1.7B**: File is independently corrupt (bad GGUF structure)
 - **Remap heuristic**: Depends on `general.file_type` KV metadata
 
 ## Next Steps
