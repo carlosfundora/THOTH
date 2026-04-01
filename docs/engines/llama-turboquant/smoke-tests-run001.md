@@ -120,7 +120,7 @@ TQ3_0 V-only frees ~400 MiB on the 8B model — meaningful for longer context or
 ## Remaining Tests
 
 - [ ] EAGLE speculative decoding (8B main + 1.5B draft)
-- [ ] Bonsai 1-bit model loading (qwen3 arch)
+- [x] Bonsai 1-bit model loading (qwen3 arch) — Fixed via upstream Q1_0 port
 - [ ] Vulkan backend (requires rebuild with `-DGGML_VULKAN=ON`)
 - [ ] AWQ conversion and test (deferred to last)
 

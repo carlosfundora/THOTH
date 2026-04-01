@@ -1,5 +1,7 @@
 # Bonsai 1-bit Model Compatibility — Test Results (Run 001)
 
+> **Update (2026-04-01):** The root cause (type ID conflict) has been resolved via an upstream port of Q1_0 types. All Bonsai models (1.7B, 4B, 8B) now load and run successfully. The initial assessment that 1.7B was "corrupt" was incorrect. See [`../prismml-llama/q1_0-port-results.md`](../prismml-llama/q1_0-port-results.md) for current status.
+
 **Date:** 2025-07-14
 **Binary:** llama-turboquant (b0-unknown), built with HIP/gfx1030
 **Models Tested:**
@@ -125,8 +127,7 @@ The failure is in the **GGUF tensor loader** (type ID interpretation), not the m
 
 ## Status
 
-- [x] Bonsai-1.7B GGUF — FAILED (corrupt)
-- [x] Bonsai-4B GGUF — FAILED (tensor offset mismatch)
-- [x] Bonsai-8B GGUF — FAILED (tensor offset mismatch)
-- [ ] Re-convert from safetensors — NOT YET ATTEMPTED
-- [ ] PrismML pre-built binary test — NOT YET ATTEMPTED
+- [x] Bonsai-1.7B GGUF — FIXED (loads successfully with Q1_0 remap)
+- [x] Bonsai-4B GGUF — FIXED (loads successfully with Q1_0 remap)
+- [x] Bonsai-8B GGUF — FIXED (loads successfully with Q1_0 remap)
+- [x] Ported PrismML Q1_0 types into turboquant (Option D)
