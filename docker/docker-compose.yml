@@ -2,12 +2,35 @@
 # THOTH — Docker Compose (ROCm + TurboQuant Dev Environment)
 # ═══════════════════════════════════════════════════════════════
 # Usage:
-#   docker compose up -d          # Start interactive container
-#   docker compose exec thoth bash  # Attach to shell
-#   docker compose down            # Stop
+#   docker compose up -d            # Start both services
+#   docker compose exec thoth bash  # Attach to experiment shell
+#   docker compose down             # Stop all
+# W&B Dashboard: http://localhost:8765
+# ⚠️  SAFETY: Watch GPU temp with `watch -n 2 rocm-smi` on host
+#   Hard limit: 90°C edge temp → docker compose down immediately
 # ═══════════════════════════════════════════════════════════════
 
 services:
+
+  # ── W&B Experiment Tracking Server ──────────────────────────
+  wandb-server:
+    image: wandb/local
+    container_name: wandb-server
+    restart: unless-stopped
+    ports:
+      - "${WANDB_PORT:-8765}:8080"   # UI at http://localhost:8765
+    volumes:
+      - wandb-data:/vol
+    environment:
+      - LOCAL_RESTORE=true
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ── Main THOTH Research Container ───────────────────────────
   thoth:
     build:
       context: ..
@@ -15,6 +38,9 @@ services:
     image: thoth:latest
     container_name: thoth
     hostname: thoth
+    depends_on:
+      wandb-server:
+        condition: service_healthy
 
     # ROCm GPU passthrough
     devices:
@@ -29,6 +55,13 @@ services:
     security_opt:
       - seccomp=unconfined
 
+    # ⚠️ Safety hardening
+    shm_size: '8g'   # PyTorch shared memory — prevents silent OOM crashes
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
     environment:
       - HSA_OVERRIDE_GFX_VERSION=${HSA_OVERRIDE_GFX_VERSION:-10.3.0}
       - HIP_VISIBLE_DEVICES=${HIP_VISIBLE_DEVICES:-0}
@@ -36,9 +69,12 @@ services:
       - THOTH_MODEL_PATH=/workspace/models
       - TRANSFORMERS_CACHE=/workspace/models/huggingface
       - HF_HOME=/workspace/models/huggingface
+      # W&B SDK → local server (no cloud, fully offline)
+      - WANDB_BASE_URL=http://wandb-server:8080
+      - WANDB_MODE=${WANDB_MODE:-online}
 
     volumes:
-      # Host mounts — large directories stay on host
+      # Host mounts — large directories stay on host (no duplication)
       - ../../forks:/workspace/forks:rw
       - ../../models:/workspace/models:rw
       - ../../build:/workspace/build:rw
@@ -46,7 +82,7 @@ services:
       - ..:/workspace/thoth:rw
 
     ports:
-      - "${THOTH_LLAMA_PORT:-8080}:8080"    # llama-server
+      - "${THOTH_LLAMA_PORT:-8081}:8080"    # llama-server (moved off 8080)
       - "${THOTH_VLLM_PORT:-8000}:8000"     # vllm (optional)
 
     # Full CPU passthrough — all 24 host threads available
@@ -69,3 +105,6 @@ services:
             - driver: amdgpu
               count: 1
               capabilities: [gpu]
+
+volumes:
+  wandb-data:   # Persistent W&B experiment storage

@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     vim \
     htop \
+    radeontop \
     rocm-smi \
     && rm -rf /var/lib/apt/lists/*
 
