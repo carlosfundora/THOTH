@@ -1,4 +1,8 @@
-# THOTH — Build & Runtime Artifacts
+# ──────────────────────────────────────────────
+# THOTH .gitignore
+# ──────────────────────────────────────────────
+
+# ── Build & Runtime Artifacts ────────────────
 build/
 *.o
 *.so
@@ -6,23 +10,30 @@ build/
 *.dylib
 *.dll
 *.exe
+cmake-build-*/
+_build/
+CMakeCache.txt
+CMakeFiles/
 
-# Python
+# ── Python ───────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
+*$py.class
 *.egg-info/
 .mypy_cache/
 .pytest_cache/
 *.eggs/
 dist/
 
-# Virtual Environments
+# ── Virtual Environments ────────────────────
 .venv/
+.venv-*/
 venv/
 env/
 
-# Model Weights (too large for git)
+# ── Model Weights (too large for git) ───────
 *.gguf
 *.bin
 *.safetensors
@@ -30,25 +41,70 @@ env/
 *.pth
 *.onnx
 *.ot
+*.ckpt
 
-# IDE / Editor
+# ── Secrets & Credentials (NEVER upload) ────
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.secret
+*.token
+credentials*
+*_rsa
+*_ed25519
+*_ecdsa
+id_dsa
+
+# ── IDE / Editor ────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# ── OS ──────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# Docker
+# ── Docker ──────────────────────────────────
 *.tar
 *.tar.gz
+*.tar.zst
 
-# Logs
+# ── Logs ────────────────────────────────────
 *.log
 logs/
 
-# Node (if any tooling)
+# ── Node (if any tooling) ───────────────────
 node_modules/
+
+# ── ROCm / HIP Build Caches ────────────────
+*.hsaco
+*.hipfb
+*.miopen
+.cache/
+*.kdb
+
+# ── Core Dumps ──────────────────────────────
+core
+core.*
+vgcore.*
+
+# ── Temporary / Scratch ─────────────────────
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+scratch/
+tmp/
+
+# ── Archives (local build outputs) ──────────
+*.zip
+*.7z
+*.xz
+*.bz2

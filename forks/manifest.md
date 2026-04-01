@@ -14,7 +14,6 @@
 | rocBLAS                       | AMD rocBLAS library (GEMM/attention kernels) |
 | rocm-install-on-linux         | Official ROCm install scripts + patch examples for consumer GPUs |
 | rocm-libraries                | Consolidated ROCm math libraries (rocBLAS, MIOpen, etc.) |
-| rocm_sdk_builder              | lamikr's ROCm SDK builder (patch farm + gfx1031-tested builds) |
 | sglang                        | SGLang inference engine (RadixAttention + TurboQuant PR + EAGLE support) |
 | SpecForge                     | Official EAGLE draft-model trainer (works with SGLang) |
 | Tensile                       | AMD kernel generator (used by rocBLAS for gfx1031) |
@@ -27,5 +26,7 @@
 | vllm                          | vLLM inference server (TurboQuant PR integration target) |
 | vllm-turboquant               | Community vLLM fork with TurboQuant already merged |
 
-## Auto-generated on $(date)
+> Shared build infrastructure note: `rocm_sdk_builder` is intentionally maintained outside `THOTH/forks` at `/home/local/Projects/build/rocm_sdk_builder` and cataloged in `/home/local/Projects/build/INDEX.md`.
+
+## Auto-generated on 2026-03-31
 ## Project goal: Frozen 8B OpenCoder target + TurboQuant KV + adaptive EAGLE/Medusa draft on RX 6700 XT (gfx1031)
