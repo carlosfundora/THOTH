@@ -2,7 +2,7 @@
 
 > Goal: TurboQuant KV cache + speculative decoding on RX 6700 XT (gfx1031)
 > Frozen 8B target (OpenCoder) + adaptive 1.5B draft (Medusa → EAGLE-3)
-> Last updated: 2026-03-31
+> Last updated: 2026-04-01
 
 ---
 
@@ -12,9 +12,9 @@ Prove TurboQuant on gfx1031 in HIP llama.cpp first, harvest algorithm pieces fro
 
 ---
 
-## Experiment 1: HIP llama.cpp First ⭐ START HERE
+## Experiment 1: HIP llama.cpp First ✅ DONE
 
-**Goal**: Prove TurboQuant runs at all on gfx1031.
+**Goal**: Prove TurboQuant runs at all on gfx1031. **PROVEN.**
 
 **Fork**: `forks/llama-turboquant` (TheTom/llama-cpp-turboquant, branch `feature/turboquant-kv-cache`)
 
@@ -46,11 +46,15 @@ cmake --build . --config Release -j$(nproc)
 ```
 
 **Success criteria**:
-- [ ] Binary compiles with GGML_TURBOQUANT=ON
-- [ ] `rocm-smi` shows GPU memory allocated
-- [ ] `--kv-cache-dtype turbo4` accepted without crash
-- [ ] Output is coherent (not garbage)
-- [ ] KV memory usage is visibly lower than baseline
+- [x] Binary compiles with HIP/gfx1030 (TQ3_0 is native, no cmake flag needed)
+- [x] `rocm-smi` shows GPU memory allocated
+- [x] `--cache-type-v tq3_0 --flash-attn on` — coherent output (V-only is the winning config)
+- [x] Output is coherent — verified on OpenCoder 1.5B and 8B
+- [x] KV memory usage reduced 39% (840→511 MiB on 1.5B, 1024→624 MiB on 8B)
+- [x] **Bonus**: Q1_0 1-bit ternary port — all 3 Bonsai models (1.7B/4B/8B) working
+
+**Key finding**: V-only TQ3_0 is the winner config. K-only causes garbled output.
+See [smoke-tests-run001](engines/llama-turboquant/smoke-tests-run001.md) and [q1_0-port-results](engines/prismml-llama/q1_0-port-results.md).
 
 **Failure modes to watch**:
 - HIP aperture violation → check HSA_OVERRIDE is set
@@ -59,9 +63,9 @@ cmake --build . --config Release -j$(nproc)
 
 ---
 
-## Experiment 2: Algorithm Validation on CPU
+## Experiment 2: Algorithm Validation on CPU ✅ DONE
 
-**Goal**: Separate algorithm validation from runtime validation. Verify rotation, codebook, outlier, and QJL behavior independently.
+**Goal**: Separate algorithm validation from runtime validation. Verify rotation, codebook, outlier, and QJL behavior independently. **ALL PASSED.**
 
 **Forks**:
 - `forks/turboquant_plus` (Apache-2.0, safe to modify)
@@ -88,15 +92,17 @@ from turboquant import rotation, codebook, outlier
 ```
 
 **Success criteria**:
-- [ ] All turboquant_plus tests pass on CPU
-- [ ] K/V norm disparity matches scos-lab findings
-- [ ] Codebook generation is deterministic
-- [ ] Rotation matrices are orthogonal (numerical check)
-- [ ] Outlier detection catches expected anomalies
+- [x] All turboquant_plus tests pass on CPU — **557/557 passed in 37.86s**
+- [x] K/V norm disparity — covered by distortion tests at d={128,256,512}
+- [x] Codebook generation is deterministic
+- [x] Rotation matrices are orthogonal (numerical check)
+- [x] Outlier detection catches expected anomalies (2.5-bit and 3.5-bit configs)
+
+See [validation-results](engines/turboquant-plus/validation-results.md).
 
 ---
 
-## Experiment 3: SGLang with TurboQuant (AMD Branch)
+## Experiment 3: SGLang with TurboQuant (AMD Branch) ⭐ NEXT
 
 **Goal**: Port validated TurboQuant into SGLang's modular framework.
 
