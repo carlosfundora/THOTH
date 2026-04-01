@@ -131,3 +131,9 @@ forks/deepspeed
 forks/pytorch
 forks/rocm_sdk_builder
 forks/unsloth-studio
+
+# Hephaestion build artifacts (keep structure, ignore bulk logs)
+logs/hephaestion/*.log
+patches/hephaestion/*.patch
+!logs/hephaestion/.gitkeep
+!patches/hephaestion/.gitkeep
