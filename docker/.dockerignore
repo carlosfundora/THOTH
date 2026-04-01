@@ -1,0 +1,23 @@
+# Exclude from Docker build context
+**/.git
+**/__pycache__
+**/*.pyc
+**/.venv
+**/venv
+**/node_modules
+**/*.egg-info
+**/.mypy_cache
+**/.pytest_cache
+**/build/
+**/dist/
+**/*.o
+**/*.so
+**/*.a
+
+# Large model files (these are volume-mounted, not copied)
+**/*.gguf
+**/*.bin
+**/*.safetensors
+**/*.pt
+**/*.pth
+**/*.onnx

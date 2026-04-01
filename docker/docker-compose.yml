@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════════
+# THOTH — Docker Compose (ROCm + TurboQuant Dev Environment)
+# ═══════════════════════════════════════════════════════════════
+# Usage:
+#   docker compose up -d          # Start interactive container
+#   docker compose exec thoth bash  # Attach to shell
+#   docker compose down            # Stop
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  thoth:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: thoth:latest
+    container_name: thoth
+    hostname: thoth
+
+    # ROCm GPU passthrough
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - render
+    ipc: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=${HSA_OVERRIDE_GFX_VERSION:-10.3.0}
+      - HIP_VISIBLE_DEVICES=${HIP_VISIBLE_DEVICES:-0}
+      - GPU_TARGETS=${GPU_TARGETS:-gfx1030}
+      - THOTH_MODEL_PATH=/workspace/models
+      - TRANSFORMERS_CACHE=/workspace/models/huggingface
+      - HF_HOME=/workspace/models/huggingface
+
+    volumes:
+      # Host mounts — large directories stay on host
+      - ../../forks:/workspace/forks:rw
+      - ../../models:/workspace/models:rw
+      - ../../build:/workspace/build:rw
+      # THOTH project content (live-edit from host)
+      - ..:/workspace/thoth:rw
+
+    ports:
+      - "${THOTH_LLAMA_PORT:-8080}:8080"    # llama-server
+      - "${THOTH_VLLM_PORT:-8000}:8000"     # vllm (optional)
+
+    # Full CPU passthrough — all 24 host threads available
+    pid: host
+
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+    deploy:
+      resources:
+        limits:
+          cpus: "${THOTH_CPUS:-24}"
+          memory: ${THOTH_MEM_LIMIT:-60G}
+        reservations:
+          cpus: "${THOTH_CPUS_RESERVED:-12}"
+          memory: ${THOTH_MEM_RESERVED:-16G}
+          devices:
+            - driver: amdgpu
+              count: 1
+              capabilities: [gpu]
