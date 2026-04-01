@@ -16,6 +16,7 @@ services:
   wandb-server:
     image: wandb/local
     container_name: wandb-server
+    profiles: [wandb]  # Sidelined — start with: docker compose --profile wandb up -d
     restart: unless-stopped
     ports:
       - "${WANDB_PORT:-8765}:8080"   # UI at http://localhost:8765
@@ -38,9 +39,10 @@ services:
     image: thoth:latest
     container_name: thoth
     hostname: thoth
-    depends_on:
-      wandb-server:
-        condition: service_healthy
+    # W&B sidelined — uncomment to re-enable
+    # depends_on:
+    #   wandb-server:
+    #     condition: service_healthy
 
     # ROCm GPU passthrough
     devices:
