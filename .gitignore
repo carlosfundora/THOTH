@@ -128,3 +128,6 @@ forks/bitsandbytes-rocm
 forks/transformers
 forks/accelerate
 forks/deepspeed
+forks/pytorch
+forks/rocm_sdk_builder
+forks/unsloth-studio
