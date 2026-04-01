@@ -79,7 +79,8 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     scipy \
     numpy \
     tqdm \
-    requests
+    requests \
+    wandb
 
 # Copy installed llama-turboquant from builder
 COPY --from=builder /opt/llama/ /usr/local/
