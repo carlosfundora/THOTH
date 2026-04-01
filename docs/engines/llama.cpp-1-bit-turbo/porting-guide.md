@@ -1,7 +1,7 @@
 # PrismML llama.cpp — Fork Analysis & 1-Bit Porting Guide
 
 **Date:** 2025-07-14
-**Fork:** `/home/local/Projects/forks/prismml-llama.cpp`
+**Fork:** `/home/local/Projects/forks/llama.cpp-1-bit-turbo`
 **Upstream:** PrismML/llama.cpp (tag `prism-b8194-1179bfc`)
 **Base:** Older llama.cpp snapshot (pre-TQ3_0)
 
