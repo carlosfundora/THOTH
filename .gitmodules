@@ -90,12 +90,3 @@
 	path = forks/vllm-turboquant
 	url = https://github.com/carlosfundora/vllm-turboquant.git
 	branch = main
-[submodule "models/OpenCoder-8B-Instruct"]
-	path = models/OpenCoder-8B-Instruct
-	url = https://huggingface.co/infly/OpenCoder-8B-Instruct
-[submodule "models/OpenCoder-1.5B-Instruct"]
-	path = models/OpenCoder-1.5B-Instruct
-	url = https://huggingface.co/infly/OpenCoder-1.5B-Instruct
-[submodule "models/Qwen2.5-7B-Instruct"]
-	path = models/Qwen2.5-7B-Instruct
-	url = https://huggingface.co/Qwen/Qwen2.5-7B-Instruct
