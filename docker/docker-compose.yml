@@ -24,7 +24,7 @@ services:
     environment:
       - LOCAL_RESTORE=true
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:8080/healthz"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -101,10 +101,7 @@ services:
         reservations:
           cpus: "${THOTH_CPUS_RESERVED:-12}"
           memory: ${THOTH_MEM_RESERVED:-16G}
-          devices:
-            - driver: amdgpu
-              count: 1
-              capabilities: [gpu]
+          # GPU passthrough handled via devices:/group_add: above (ROCm /dev/kfd + /dev/dri)
 
 volumes:
   wandb-data:   # Persistent W&B experiment storage
