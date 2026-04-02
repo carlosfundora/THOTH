@@ -2,12 +2,11 @@
 # THOTH — Docker Compose (ROCm + TurboQuant Dev Environment)
 # ═══════════════════════════════════════════════════════════════
 # Usage:
-#   docker compose up -d            # Start both services
+#   ./up.sh                         # Start THOTH with Hephaestion guard
 #   docker compose exec thoth bash  # Attach to experiment shell
 #   docker compose down             # Stop all
 # W&B Dashboard: http://localhost:8765
-# ⚠️  SAFETY: Watch GPU temp with `watch -n 2 rocm-smi` on host
-#   Hard limit: 90°C edge temp → docker compose down immediately
+# Guard thresholds live in docker/.env via HEPHAESTION_* variables.
 # ═══════════════════════════════════════════════════════════════
 
 services:
@@ -87,23 +86,15 @@ services:
       - "${THOTH_LLAMA_PORT:-8081}:8080"    # llama-server (moved off 8080)
       - "${THOTH_VLLM_PORT:-8000}:8000"     # vllm (optional)
 
-    # Full CPU passthrough — all 24 host threads available
+    # Match the host namespace for debugging, but apply direct CPU limits below
     pid: host
+    cpus: "${THOTH_CPUS:-12}"
+    mem_limit: "${THOTH_MEM_LIMIT:-60G}"
 
     # Keep container running for interactive use
     stdin_open: true
     tty: true
     restart: unless-stopped
-
-    deploy:
-      resources:
-        limits:
-          cpus: "${THOTH_CPUS:-24}"
-          memory: ${THOTH_MEM_LIMIT:-60G}
-        reservations:
-          cpus: "${THOTH_CPUS_RESERVED:-12}"
-          memory: ${THOTH_MEM_RESERVED:-16G}
-          # GPU passthrough handled via devices:/group_add: above (ROCm /dev/kfd + /dev/dri)
 
 volumes:
   wandb-data:   # Persistent W&B experiment storage

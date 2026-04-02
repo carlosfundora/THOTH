@@ -46,6 +46,32 @@ This means SGLang is now a live ROCm target in THOTH, not just a future plan.
   - `model-00002-of-00004.safetensors`
 - That corrupt shard was backed up and re-fetched from Git LFS before rerunning the load.
 
+### Docker safety and backend recovery
+
+- THOTH Docker now has a host-side guard and disk preflight under `THOTH/docker`
+- The `thoth` runtime container is capped to `12` CPUs and `60G` RAM
+- The SGLang ROCm policy was corrected so HIP no longer auto-selects `aiter` unless `aiter` is both installed and explicitly enabled through `SGLANG_USE_AITER`
+- On this machine, `aiter` is not installed in the container, so the recovered default backend is now `triton`
+
+## Runtime Matrix
+
+Validated inside the `thoth` container on `2026-04-02`:
+
+- Container image: `thoth:latest`
+- Python: `3.12.3`
+- PyTorch: `2.11.0+rocm7.2`
+- Torch HIP runtime: `7.2.26015`
+- Triton: `3.6.0`
+- SGLang: `0.5.10rc0`
+- `sgl_kernel`: `0.4.0`
+- Transformers: `5.4.0`
+- FastAPI: `0.135.3`
+- Uvicorn: `0.42.0`
+- GPU marketed as `AMD Radeon RX 6700 XT`
+- ROCm agent target exposed in-container: `gfx1030`
+- Physical card reported by `rocm-smi`: `gfx1031`
+- `aiter`: not installed in the container runtime
+
 ## Important Constraint: Real EAGLE Requires a Real EAGLE Draft
 
 SGLang supports true `EAGLE` / `EAGLE3`, but this machine does not currently have a trained OpenCoder EAGLE draft checkpoint under `Projects/models`.
@@ -75,11 +101,13 @@ docker exec thoth bash -lc '
 
 ## Immediate Next Steps
 
-1. Finish the repaired OpenCoder `EAGLE3 + tq4` load and capture the next real blocker or a successful serve
-2. Re-run Bonsai 1-bit serve with the GPU freed so the GGUF server path is validated end-to-end, not just at reader/kernel level
-3. Move from runtime bring-up to training once the runtime behavior is stable enough to justify a true OpenCoder EAGLE draft artifact
+1. Fix the ROCm radix/TurboQuant KV write path that now faults in `memory_pool.set_kv_buffer()` during the first real OpenCoder generation request
+2. Re-run OpenCoder baseline after that fix, then repeat with `STANDALONE` draft speculation
+3. Re-run Bonsai 1-bit serve after the radix/TurboQuant fix so GGUF end-to-end behavior is judged separately from the OpenCoder `tq4` path
+4. Move from runtime bring-up to SpecForge training once the runtime path is stable enough for a real OpenCoder EAGLE draft artifact
 
 ## Notes
 
 - SGLang remains the attack-order position after `llama-turboquant` and `turboquant_plus`
 - `llama-turboquant` proved HIP + TurboQuant + Bonsai Q1 on this hardware, but true EAGLE belongs in SGLang, not llama.cpp
+- AMD does support radix. The current blocker is not radix as a concept; it is this fork's ROCm `tq4` KV-cache write path during radix attention.

@@ -10,6 +10,7 @@ FROM rocm/dev-ubuntu-24.04:7.2-complete AS builder
 
 ARG GPU_TARGETS=gfx1030
 ARG CMAKE_BUILD_TYPE=Release
+ARG BUILD_JOBS=8
 
 ENV DEBIAN_FRONTEND=noninteractive \
     HSA_OVERRIDE_GFX_VERSION=10.3.0
@@ -31,6 +32,7 @@ WORKDIR /src/llama-turboquant
 RUN mkdir -p build && cd build && \
     HIPCXX="$(hipconfig -l)/clang" \
     HIP_PATH="$(hipconfig -R)" \
+    CMAKE_BUILD_PARALLEL_LEVEL="${BUILD_JOBS}" \
     cmake -S .. -B . \
       -G Ninja \
       -DGGML_HIP=ON \
@@ -38,7 +40,7 @@ RUN mkdir -p build && cd build && \
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       -DCMAKE_INSTALL_PREFIX=/opt/llama \
       -DGGML_TURBOQUANT=ON \
-    && cmake --build . --config ${CMAKE_BUILD_TYPE} -j$(nproc) \
+    && cmake --build . --config ${CMAKE_BUILD_TYPE} --parallel "${BUILD_JOBS}" \
     && cmake --install .
 
 # ── Stage 2: Runtime ────────────────────────────────────────────

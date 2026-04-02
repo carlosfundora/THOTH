@@ -8,8 +8,8 @@ ROCm 7.2 dev container for TurboQuant KV cache + speculative decoding research o
 # Build the image (compiles llama-turboquant with HIP)
 ./build.sh
 
-# Start the container
-docker compose up -d
+# Start the container with the Hephaestion guard
+./up.sh
 
 # Attach to interactive shell
 docker compose exec thoth bash
@@ -49,6 +49,9 @@ See `.env` for defaults. Key variables:
 - `HSA_OVERRIDE_GFX_VERSION=10.3.0` — Required for gfx1031
 - `GPU_TARGETS=gfx1030` — CMake target arch
 - `HIP_VISIBLE_DEVICES=0` — GPU selection
+- `THOTH_CPUS=12` — Host-enforced CPU cap for the runtime container
+- `THOTH_BUILD_JOBS=8` — Max parallel build jobs during image rebuilds
+- `HEPHAESTION_*` — Circuit-breaker thresholds for CPU, GPU, NVMe, and disk
 
 ## Ports
 
@@ -56,3 +59,17 @@ See `.env` for defaults. Key variables:
 |---|---|
 | 8080 | llama-server |
 | 8000 | vLLM (optional) |
+
+## Safety
+
+The Docker workflow now has two safety layers:
+
+```bash
+# Disk preflight only
+./preflight.sh /
+
+# One-shot guard sample
+./hephaestion-guard.sh --once
+```
+
+`./up.sh` starts `docker compose up -d` and launches the background guard. If the host crosses the configured thermal or disk limits, the guard logs the reason to `THOTH/logs/hephaestion`, stops the `thoth` container, and exits nonzero.

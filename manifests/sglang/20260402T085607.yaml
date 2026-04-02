@@ -1,0 +1,65 @@
+run_id: 20260402T085607
+agent: hephaestion
+target: sglang
+target_path: /home/local/Projects/THOTH/forks/sglang
+container: thoth
+container_image: thoth:latest
+hardware:
+  gpu: AMD Radeon RX 6700 XT
+  physical_gfx: gfx1031
+  compatibility_target: gfx1030
+environment:
+  HSA_OVERRIDE_GFX_VERSION: "10.3.0"
+  cpu_cap: 12
+  memory_cap_bytes: 64424509440
+runtime_matrix:
+  python: "3.12.3"
+  torch: "2.11.0+rocm7.2"
+  torch_hip: "7.2.26015"
+  triton: "3.6.0"
+  sglang: "0.5.10rc0"
+  sgl_kernel: "0.4.0"
+  transformers: "5.4.0"
+  fastapi: "0.135.3"
+  uvicorn: "0.42.0"
+  aiter: absent
+git:
+  head: a1b689771d6deab2515abe2d68c9460188c1d10b
+  dirty:
+    - python/sglang/srt/server_args.py
+selected_improvement:
+  title: Force ROCm backend fallback from missing aiter to triton
+  file: /home/local/Projects/THOTH/forks/sglang/python/sglang/srt/server_args.py
+validations:
+  - name: bonsai_autobackend_policy
+    status: success
+    result: auto-selected attention_backend=triton on ROCm with radix enabled
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T085513_sglang_bonsai_q1_autobackend.log
+  - name: opencoder8b_tq4_server_boot
+    status: success
+    model: /home/local/Projects/models/registry/infly/OpenCoder-8B-Instruct/weights
+    flags:
+      - --kv-cache-dtype tq4
+      - --context-length 1024
+      - --max-total-tokens 1024
+      - --cpu-offload-gb 12
+      - --max-running-requests 1
+      - --disable-overlap-schedule
+      - --disable-cuda-graph
+      - --disable-piecewise-cuda-graph
+    checks:
+      - GET /health => 200
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T085607_sglang_opencoder8b_tq4_baseline.log
+  - name: opencoder8b_tq4_first_generate
+    status: failed
+    endpoint: POST /generate
+    failure: HSA_STATUS_ERROR_MEMORY_APERTURE_VIOLATION
+    failure_path:
+      - radix_attention.py
+      - triton_backend.py
+      - memory_pool.py:set_kv_buffer
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T085607_sglang_opencoder8b_tq4_baseline.log
+notes:
+  - AMD radix support remains in scope.
+  - The old ROCm failure in aiter was caused by an invalid default backend assumption, not by radix itself.
+  - The active blocker is the TurboQuant KV-cache write path during a real generation request.
