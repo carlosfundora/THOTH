@@ -4,6 +4,9 @@
 > Frozen 8B target (OpenCoder) + adaptive 1.5B draft (Medusa → EAGLE-3)
 > Last updated: 2026-04-03
 
+Quickstart / location map:
+- [`docs/quickstart.md`](quickstart.md)
+
 ---
 
 ## Principle
@@ -173,9 +176,30 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
     - SpecForge draft config fields: `parallel_drafting`, `mask_token_id`, `k_train`, `cod_retention`
     - SpecForge draft head parameter: `mask_hidden`
     - SGLang runtime enum/validation support: `P_EAGLE`
-  - current validation gap is environment wiring, not parser/compiler breakage:
-    - edited Python files compile successfully
-    - full unit/runtime tests still depend on completing the shared ROCm Python environment for local `SpecForge` + `sglang` imports
+- Bonsai-1.7B is now the preferred first THOTH P-EAGLE training target because it is the faster local runtime canary
+- Use `prism-ml/Bonsai-1.7B-unpacked` for HF/Transformers training, while keeping the local GGUF as the runtime artifact
+- Canonical live SGLang runtime target is `forks/sglang/.venv-sglang`, bridged to the shared ROCm base venv
+- The shared ROCm base venv should continue to provide PyTorch/ROCm dependencies only; it should not be the direct SGLang install target
+- The stale user-local editable SGLang install under `~/.local` should be retired from normal use
+- Current cutover reality is:
+  - `sglang` imports from the THOTH fork
+  - `sgl_kernel` still imports from the shared ROCm base wheel
+  - `triton` still imports from the user-site ROCm install
+  - local THOTH `sgl-kernel` sources and dirty `build-resources/triton` / `build-resources/pytorch` trees are not yet proven to be part of the live stack
+- Current provenance audit:
+  - [`reports/sglang/live-install-cutover-2026-04-03.md`](../reports/sglang/live-install-cutover-2026-04-03.md)
+- Use the `bonsai17_smoke` launcher profile first when validating the training path end-to-end on gfx1030
+  - the Triton large-vocab loss blocker is now fixed by chunked block-size selection in `specforge/core/loss.py`
+  - the validated low-VRAM smoke path on this box is:
+    - `sdpa` attention backend
+    - `ttt_length=5`
+    - `k_train=5`
+    - `train_mask_hidden_only=true`
+    - writable output path under `THOTH/artifacts/models/local/`
+  - first smoke artifact is complete and reloads successfully:
+    - `/home/local/Projects/THOTH/artifacts/models/local/Bonsai-1.7B-P-EAGLE-local-smoke/epoch_0_step_2`
+  - current remaining gap is not framework bring-up; it is widening from the low-VRAM smoke mode to a broader full-parameter run without exceeding the ROCm memory budget
+  - current install/cutover work must normalize all active launchers to the absolute `.venv-sglang` python path rather than relying on `PATH` or the stale `~/.local/bin/sglang`
 
 ---
 
