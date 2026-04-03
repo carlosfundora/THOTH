@@ -45,6 +45,11 @@ This means SGLang is now a live ROCm target in THOTH, not just a future plan.
 - The first blocking failure was not the SGLang port. It was a corrupt local shard in the OpenCoder 8B checkout:
   - `model-00002-of-00004.safetensors`
 - That corrupt shard was backed up and re-fetched from Git LFS before rerunning the load.
+- A second controlled proof now exists with a local draft build:
+  - target: `OpenCoder-1.5B-Instruct`
+  - draft: `OpenCoder-1.5B-EAGLE3-local`
+  - algorithm: true `EAGLE3`
+  - result: `/generate` succeeded and returned speculative metrics
 
 ### Docker safety and backend recovery
 
@@ -74,7 +79,7 @@ Validated inside the `thoth` container on `2026-04-02`:
 
 ## Important Constraint: Real EAGLE Requires a Real EAGLE Draft
 
-SGLang supports true `EAGLE` / `EAGLE3`, but this machine does not currently have a trained OpenCoder EAGLE draft checkpoint under `Projects/models`.
+SGLang supports true `EAGLE` / `EAGLE3`, and THOTH now has a local OpenCoder 1.5B proof draft under `Projects/models/registry/local`.
 
 The plain `OpenCoder-1.5B-Instruct` checkpoint is useful for:
 
@@ -82,7 +87,7 @@ The plain `OpenCoder-1.5B-Instruct` checkpoint is useful for:
 - tokenizer/runtime compatibility checks
 - comparative standalone speculation
 
-It is not automatically the same thing as a trained `EAGLE3` draft artifact. The runtime path can be exercised, but a production-correct OpenCoder EAGLE deployment still requires the training layer to produce or adapt a proper draft checkpoint.
+It is not automatically the same thing as a trained `EAGLE3` draft artifact. The runtime path can now be exercised locally, but a production-correct OpenCoder EAGLE deployment still requires the training layer to produce or adapt a proper draft checkpoint.
 
 ## Container Recipe
 
@@ -101,10 +106,11 @@ docker exec thoth bash -lc '
 
 ## Immediate Next Steps
 
-1. Fix the ROCm radix/TurboQuant KV write path that now faults in `memory_pool.set_kv_buffer()` during the first real OpenCoder generation request
-2. Re-run OpenCoder baseline after that fix, then repeat with `STANDALONE` draft speculation
-3. Re-run Bonsai 1-bit serve after the radix/TurboQuant fix so GGUF end-to-end behavior is judged separately from the OpenCoder `tq4` path
-4. Move from runtime bring-up to SpecForge training once the runtime path is stable enough for a real OpenCoder EAGLE draft artifact
+1. Keep the recovered OpenCoder 8B baseline as the reference-good SGLang path
+2. Fix the remaining ROCm `indexSelectSmallIndex` fault that still appears on fresh `tq4` and `STANDALONE` requests
+3. Re-run `tq4` and `STANDALONE` after that patch with short benchmark/resource captures
+4. Use the local OpenCoder 1.5B proof draft as the runtime foothold, then train a real OpenCoder draft artifact
+5. Move from runtime recovery to SpecForge and Medusa training only after the request path is stable enough for repeated benchmarking
 
 ## Notes
 

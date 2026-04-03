@@ -1,4 +1,4 @@
-# EAGLE Speculative Decoding — Test Results (Run 002)
+# Draft-Model Speculative Decoding — Test Results (Run 002)
 
 **Date:** 2026-04-01
 **Hardware:** RX 6700 XT (`gfx1031` treated as `gfx1030`)
@@ -15,6 +15,13 @@ This run rebuilt `forks/llama-turboquant` inside Docker and validated three runt
 3. The same OpenCoder pair also works with quantized `tq3_0` V-cache in speculative mode when Flash Attention is explicitly enabled
 
 This is still **draft-model speculation**, not a first-class `EAGLE3` runtime mode.
+
+Important correction:
+
+- this file retains its historical filename for link stability
+- the actual tested path was ordinary llama draft-model speculation via
+  `--model-draft`
+- no true llama-side EAGLE implementation was proven here
 
 ---
 

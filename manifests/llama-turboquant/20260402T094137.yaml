@@ -1,0 +1,97 @@
+run_id: 20260402T094137
+agent: hephaestion
+target: llama-turboquant
+target_path: /home/local/Projects/THOTH/forks/llama-turboquant
+container: thoth
+hardware:
+  gpu: AMD Radeon RX 6700 XT
+  physical_gfx: gfx1031
+  compatibility_target: gfx1030
+environment:
+  HSA_OVERRIDE_GFX_VERSION: "10.3.0"
+  cpu_cap: 12
+  memory_cap_bytes: 64424509440
+artifacts:
+  llama_cli: /home/local/Projects/THOTH/forks/llama-turboquant/build-hephaestion-docker/bin/llama-cli
+monitoring:
+  host_memory: /proc/meminfo
+  gpu: rocm-smi --showtemp --showuse --showmeminfo vram --json
+  container: docker stats --no-stream
+validations:
+  - name: opencoder15_baseline_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094137_opcoder15_baseline.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094137_opcoder15_baseline_resources.jsonl
+  - name: opencoder15_tq3k_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    flags:
+      - --cache-type-k tq3_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094141_opcoder15_tq3k.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094141_opcoder15_tq3k_resources.jsonl
+  - name: opencoder15_tq3v_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    flags:
+      - --flash-attn on
+      - --cache-type-v tq3_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094145_opcoder15_tq3v.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094145_opcoder15_tq3v_resources.jsonl
+  - name: opencoder15_q8v_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    flags:
+      - --flash-attn on
+      - --cache-type-v q8_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094201_opcoder15_q8v.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094201_opcoder15_q8v_resources.jsonl
+  - name: opencoder8_baseline_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094216_opcoder8_baseline.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094216_opcoder8_baseline_resources.jsonl
+  - name: opencoder8_tq3v_monitored
+    status: success
+    model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    flags:
+      - --flash-attn on
+      - --cache-type-v tq3_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094224_opcoder8_tq3v.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094224_opcoder8_tq3v_resources.jsonl
+  - name: opencoder8_draft_monitored
+    status: success
+    main_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    draft_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094253_opcoder8_draft.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094253_opcoder8_draft_resources.jsonl
+  - name: opencoder8_draft_tq3v_monitored
+    status: success
+    main_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-8B-Instruct-GGUF/OpenCoder-8B-Instruct.Q4_K_M.gguf
+    draft_model: /home/local/Projects/models/registry/QuantFactory/OpenCoder-1.5B-Instruct-GGUF/OpenCoder-1.5B-Instruct.Q4_K_M.gguf
+    flags:
+      - --flash-attn on
+      - --cache-type-v tq3_0
+      - --cache-type-v-draft tq3_0
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094300_opcoder8_draft_tq3v.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094300_opcoder8_draft_tq3v_resources.jsonl
+  - name: bonsai17_monitored
+    status: success
+    model: /home/local/Projects/models/registry/PrismML/Bonsai-1.7B-gguf/Bonsai-1.7B.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094819_bonsai17_cli.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094819_bonsai17_cli_resources.jsonl
+  - name: bonsai4_monitored
+    status: success
+    model: /home/local/Projects/models/registry/PrismML/Bonsai-4B-gguf/Bonsai-4B.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T094901_bonsai4_cli.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T094901_bonsai4_cli_resources.jsonl
+  - name: bonsai8_monitored
+    status: success
+    model: /home/local/Projects/models/registry/PrismML/Bonsai-8B-gguf/Bonsai-8B.gguf
+    log: /home/local/Projects/THOTH/logs/hephaestion/20260402T095042_bonsai8_cli.log
+    resources: /home/local/Projects/THOTH/logs/hephaestion/20260402T095042_bonsai8_cli_resources.jsonl
+notes:
+  - This run corrected the benchmark narrative and separated historical proof, run002 proof-of-life, and monitored rerun evidence.
+  - Llama-side speculative decoding remains plain draft-model speculation, not true EAGLE.
+  - The monitored 2026-04-02 V-cache results were materially slower than the 2025-07-14 historical record.
+  - The monitored Bonsai rerun shows functional Q1 compatibility but a strongly CPU-bound runtime path.
