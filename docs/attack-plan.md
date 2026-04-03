@@ -158,6 +158,15 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 **Next goal**:
 - run `EAGLE3` semantics on both the draft model and the generation model simultaneously without regressing the validated Docker paths above
 
+**Next phase additions**:
+- harden `forks/llama-turboquant` with loader and server guardrail regressions before broader upstreaming
+- keep ROCm host-buffer defaults and KV-cache guardrails explicit on the llama side
+- upstream from `llama-turboquant` in small review branches:
+  - PrismML `Q1_0` / `Q1_0_G128`
+  - null-context guard
+  - ROCm hardening tests and docs
+- do **not** upstream `forks/llama.cpp` yet: the only local standalone ROCm guard commit is currently an accidental symlink placeholder and must be rebuilt as a real source patch first
+
 ---
 
 ## Experiment 4: vLLM Integration

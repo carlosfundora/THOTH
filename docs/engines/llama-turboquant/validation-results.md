@@ -152,6 +152,24 @@ Evidence:
 
 ---
 
+## Hardening Update (2026-04-03)
+
+The runtime hardening pass added narrow regressions around the exact failure
+classes that showed up later in the SGLang ROCm bring-up:
+
+- GGUF float tensor types now have a loader regression so Bonsai-style norm
+  tensors remain `F32` / `F16` / `BF16` through metadata load
+- CLI parser coverage now explicitly includes `tq3_0` KV cache flags and
+  `--no-host`
+- the server test suite now preserves the fail-fast guard that rejects
+  quantized V-cache with Flash Attention forced off
+- server docs now call out `tq3_0` cache values and the ROCm host-buffer policy
+
+Hardening evidence:
+- [`/home/local/Projects/THOTH/reports/llama-turboquant/rocm-hardening-2026-04-03.md`](/home/local/Projects/THOTH/reports/llama-turboquant/rocm-hardening-2026-04-03.md)
+
+---
+
 ## Current Status
 
 | Area | Status | Notes |
@@ -174,3 +192,13 @@ on SGLang for:
 - stable speculative generation
 - true EAGLE / EAGLE3 runtime validation
 - later OpenCoder EAGLE training follow-through
+
+Upstreaming status from this pass:
+
+- review branches are ready in `carlosfundora/llama-turboquant` for:
+  - `review/prismml-q1-support`
+  - `review/null-context-guard`
+  - `review/rocm-hardening`
+- standalone `forks/llama.cpp` upstream prep is still blocked until the local
+  ROCm null-context patch is rebuilt as a real source diff rather than the
+  accidental symlink placeholder currently on `master`

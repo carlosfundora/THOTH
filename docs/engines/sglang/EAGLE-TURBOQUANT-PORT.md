@@ -27,7 +27,10 @@ The goal of this porting session was to achieve a functioning SGLang environment
 
 ### Base Initialization
 - Cherry-picked the TurboQuant donor commit (`96183598c`) cleanly onto the `sglang/main` fork.
-- Cleanly committed the `llama.cpp` side patch (isolated to a single null-context guard to prevent downstream faults) before strictly continuing into the SGLang architecture.
+- At the time, the working assumption was that the `llama.cpp` side null-context
+  guard had already been isolated cleanly. A later audit showed the standalone
+  `forks/llama.cpp` commit was actually an accidental symlink placeholder, so it
+  is not a trustworthy source-of-truth patch for upstreaming.
 
 ### Build and Environment
 - **ROCm Kernel Gate**: Patched `sgl-kernel/setup_rocm.py` to accept RDNA2 safely. Normalized `gfx1031` to `gfx1030` and explicitly disabled MI-only FP8 build paths. The artifact compiles and injects successfully into the venv.
