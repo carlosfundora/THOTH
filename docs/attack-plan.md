@@ -166,6 +166,16 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
   - null-context guard
   - ROCm hardening tests and docs
 - do **not** upstream `forks/llama.cpp` yet: the only local standalone ROCm guard commit is currently an accidental symlink placeholder and must be rebuilt as a real source patch first
+- cleanup-first P-EAGLE work is now the active SGLang/SpecForge phase:
+  - `forks/sglang` validated branch stays on `sglang-turboquant-1-bit_gfx1030`, with post-validation experiments split off to `local/dual-eagle3-experiments-rocm`
+  - `forks/SpecForge` reusable runtime/training changes live on `thoth/eagle3-runtime-clean`, while local-only config artifacts remain quarantined on `local/eagle3-configs-and-training`
+  - the first P-EAGLE foundation is in flight for `OpenCoder-1.5B`:
+    - SpecForge draft config fields: `parallel_drafting`, `mask_token_id`, `k_train`, `cod_retention`
+    - SpecForge draft head parameter: `mask_hidden`
+    - SGLang runtime enum/validation support: `P_EAGLE`
+  - current validation gap is environment wiring, not parser/compiler breakage:
+    - edited Python files compile successfully
+    - full unit/runtime tests still depend on completing the shared ROCm Python environment for local `SpecForge` + `sglang` imports
 
 ---
 
