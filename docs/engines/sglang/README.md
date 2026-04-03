@@ -91,15 +91,16 @@ Current validated runtime paths:
 - `OpenCoder-1.5B-Instruct + local EAGLE3 + tq4 + Triton + radix`
   - proven in Docker on `2026-04-03`
   - request returned `200 OK`
-  - short deterministic run produced:
-    - text: `Write a test for this function using the`
-    - `completion_tokens=8`
-    - `e2e_latency=131.27s`
-    - `spec_draft_token_num=21`
+  - fresh canary on the current branch also returned `200 OK`
+  - short deterministic canary produced:
+    - text: `def hello_world(): print("Hello, world!")`
+    - `completion_tokens=16`
+    - `e2e_latency=10.14s`
+    - `spec_draft_token_num=105`
   - peak sampled resources:
-    - container memory: `9.85 GiB`
-    - GPU junction: `52 C`
-    - VRAM allocation: `62%`
+    - latest canary container memory: `9.85 GiB`
+    - latest canary GPU junction: `50 C`
+    - latest canary VRAM allocation: `92%`
   - report: [`opencoder15-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md)
 
 - `Bonsai-1.7B GGUF + local EAGLE3 + Triton + radix`
@@ -108,8 +109,18 @@ Current validated runtime paths:
   - report: [`validation-results.md`](./validation-results.md)
 
 - `Bonsai-1.7B GGUF + local EAGLE3 + tq4 + Triton + radix`
-  - still blocked on the first real request during draft extend
-  - current blocker report: [`bonsai17-eagle3-tq4-blocker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md)
+  - now proven end-to-end in Docker on `2026-04-03`
+  - request returned `200 OK`
+  - short deterministic run produced:
+    - text: `Alex, and I'm a student at the University of California, Berkeley...`
+    - `completion_tokens=24`
+    - `e2e_latency=158.24s`
+    - `spec_draft_token_num=69`
+  - peak sampled resources:
+    - container memory: `8.52 GiB`
+    - GPU junction: `50 C`
+    - VRAM allocation: `97%`
+  - report: [`bonsai17-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-docker-2026-04-03.md)
 
 ## Important Constraint: Real EAGLE Requires a Real EAGLE Draft
 
@@ -141,12 +152,12 @@ docker exec thoth bash -lc '
 ## Immediate Next Steps
 
 1. Keep `OpenCoder-1.5B + local EAGLE3 + tq4` as the regression canary for the synced branch
-2. Keep `Bonsai-1.7B + EAGLE3` without `tq4` as the 1-bit non-`tq` canary
-3. Recover `Bonsai-1.7B + EAGLE3 + tq4` by harvesting donor runtime patterns from `dendrite`, `turboquant_plus`, and `llama-turboquant`
-4. Only widen back out to OpenCoder 8B, Bonsai 4B, or training after the Bonsai `tq4` request path is green
+2. Keep `Bonsai-1.7B + local EAGLE3 + tq4` as the 1-bit speculative regression canary
+3. Cleanly sync the validated branch state and donor-backed runtime fixes
+4. Next runtime target: evaluate simultaneous `EAGLE3` behavior on both the draft model and the generation model without regressing the validated Docker paths
 
 ## Notes
 
 - SGLang remains the attack-order position after `llama-turboquant` and `turboquant_plus`
 - `llama-turboquant` proved HIP + TurboQuant + Bonsai Q1 on this hardware, but true EAGLE belongs in SGLang, not llama.cpp
-- AMD does support radix. The current blocker is not radix as a concept; it is this fork's ROCm `tq4` KV-cache write path during radix attention.
+- AMD does support radix. The current validated branch proves radix + Triton + `tq4` together on both the OpenCoder path and the Bonsai 1-bit path.

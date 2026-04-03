@@ -112,7 +112,7 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 
 ---
 
-## Experiment 3: SGLang with TurboQuant / EAGLE / 1-bit ⭐ ACTIVE
+## Experiment 3: SGLang with TurboQuant / EAGLE / 1-bit ✅ VALIDATED
 
 **Goal**: Port validated TurboQuant into SGLang's modular framework, then use SGLang as the real EAGLE target.
 
@@ -129,28 +129,34 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 5. Relax ROCm GGUF gating in model config so SGLang no longer rejects the format up front
 6. Stand up a Docker-first `.venv-sglang` inside the THOTH container for all SGLang runtime work
 
-**Current live validation track**:
-1. Bonsai 1.7B GGUF on SGLang for end-to-end 1-bit server proof
-2. OpenCoder 8B + OpenCoder 1.5B on SGLang with:
+**Validated runtime track**:
+1. Bonsai 1.7B GGUF on SGLang now serves end-to-end in both:
+   - `local EAGLE3 + Triton + radix`
+   - `local EAGLE3 + tq4 + Triton + radix`
+2. OpenCoder 1.5B on SGLang serves end-to-end with:
    - `--speculative-algorithm EAGLE3`
    - `--kv-cache-dtype tq4`
-   - ROCm gfx1030 compatibility
-3. Training follow-through after runtime proof, because OpenCoder still needs a real EAGLE draft artifact rather than a plain 1.5B instruct checkpoint
+   - Triton + radix on ROCm gfx1030 compatibility
+3. Training follow-through remains after runtime proof, because production OpenCoder still benefits from a real EAGLE draft artifact rather than relying only on bring-up checkpoints
 
-**Current blockers actually observed**:
+**Resolved blockers**:
 - The first OpenCoder EAGLE3 load failure was a bad local weights checkout, not a ROCm port failure:
   - `model-00002-of-00004.safetensors` was corrupt and had to be re-fetched from Git LFS
-- There is no local trained OpenCoder EAGLE checkpoint under `Projects/models`
+- Bonsai GGUF coherence required fixing GGUF type-name handling so unquantized norm weights are loaded correctly
+- Bonsai draft extend required preserving the draft projection dtype in `llama_eagle3.py`
 - The validated Docker runtime state is now:
   - `OpenCoder-1.5B + local EAGLE3 + tq4 + Triton + radix` works and returns `200 OK`
   - `Bonsai-1.7B + local EAGLE3 + Triton + radix` works and returns `200 OK`
-  - `Bonsai-1.7B + local EAGLE3 + tq4 + Triton + radix` still faults on the first real request
+  - `Bonsai-1.7B + local EAGLE3 + tq4 + Triton + radix` works and returns `200 OK`
 
 **Success criteria**:
-- [ ] Bonsai `Q1_0` serves end-to-end in SGLang on ROCm
+- [x] Bonsai `Q1_0` serves end-to-end in SGLang on ROCm
 - [x] OpenCoder local `EAGLE3` + `tq4` works end-to-end in SGLang
-- [ ] OpenCoder runtime reaches a true EAGLE-compatible serve path or fails with a precise model-structure constraint
+- [x] OpenCoder runtime reaches a true EAGLE-compatible serve path
 - [ ] Training path is ready to produce a real OpenCoder EAGLE draft artifact once runtime proof is stable
+
+**Next goal**:
+- run `EAGLE3` semantics on both the draft model and the generation model simultaneously without regressing the validated Docker paths above
 
 ---
 

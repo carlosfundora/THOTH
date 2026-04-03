@@ -16,6 +16,10 @@ shift 5
 EXTRA_ARGS=("$@")
 MAX_NEW_TOKENS="${PROBE_MAX_NEW_TOKENS:-64}"
 REQUEST_TIMEOUT="${PROBE_REQUEST_TIMEOUT:-240}"
+TEMPERATURE="${PROBE_TEMPERATURE:-0.0}"
+TOP_P="${PROBE_TOP_P:-}"
+TOP_K="${PROBE_TOP_K:-}"
+DISABLE_SPECULATIVE="${PROBE_DISABLE_SPECULATIVE:-0}"
 
 TS="$(date +%Y%m%dT%H%M%S)"
 LOG_PATH="${ROOT}/logs/${TS}_${NAME}.log"
@@ -66,7 +70,50 @@ PY
 ) >"${RES_PATH}" &
 MONPID=$!
 
-docker exec thoth bash -lc '
+LAUNCH_ARGS=(
+  /workspace/thoth/forks/sglang/.venv-sglang/bin/python3
+  -u
+  -m
+  sglang.launch_server
+  --model-path "${MODEL_PATH}"
+  --trust-remote-code
+  --host 127.0.0.1
+  --port "${PORT}"
+  --attention-backend triton
+  --disable-cuda-graph
+  --disable-piecewise-cuda-graph
+  --disable-cuda-graph-padding
+  --disable-flashinfer-autotune
+  --disable-overlap-schedule
+  --skip-server-warmup
+  --disable-custom-all-reduce
+  --mem-fraction-static 0.35
+  --max-running-requests 1
+  --schedule-policy fcfs
+)
+
+if [ "${DISABLE_SPECULATIVE}" != "1" ]; then
+  LAUNCH_ARGS+=(
+    --speculative-algorithm EAGLE3
+    --speculative-draft-model-path "${DRAFT_PATH}"
+    --speculative-draft-load-format safetensors
+    --speculative-num-steps 3
+    --speculative-num-draft-tokens 4
+    --speculative-eagle-topk 1
+  )
+fi
+
+LAUNCH_ARGS+=("${EXTRA_ARGS[@]}")
+
+DOCKER_ENV_ARGS=()
+if [ -n "${SGLANG_ROCM_DEBUG_KV:-}" ]; then
+  DOCKER_ENV_ARGS+=(-e SGLANG_ROCM_DEBUG_KV)
+fi
+if [ -n "${SGLANG_PRISM_HIP_FORCE_INPUT_DTYPE:-}" ]; then
+  DOCKER_ENV_ARGS+=(-e SGLANG_PRISM_HIP_FORCE_INPUT_DTYPE)
+fi
+
+docker exec "${DOCKER_ENV_ARGS[@]}" thoth bash -lc '
   cd /workspace/thoth/forks/sglang
   export PYTHONPATH=/workspace/thoth/forks/sglang/python:/workspace/thoth/forks/sglang/sgl-kernel/python
   export HSA_OVERRIDE_GFX_VERSION=10.3.0
@@ -75,35 +122,12 @@ docker exec thoth bash -lc '
   if [ -n "${SGLANG_ROCM_DEBUG_KV:-}" ]; then
     export SGLANG_ROCM_DEBUG_KV
   fi
+  if [ -n "${SGLANG_PRISM_HIP_FORCE_INPUT_DTYPE:-}" ]; then
+    export SGLANG_PRISM_HIP_FORCE_INPUT_DTYPE
+  fi
   export PYTHONUNBUFFERED=1
   exec "$@"
-' bash \
-  /workspace/thoth/forks/sglang/.venv-sglang/bin/python3 \
-  -u \
-  -m \
-  sglang.launch_server \
-  --model-path "${MODEL_PATH}" \
-  --trust-remote-code \
-  --host 127.0.0.1 \
-  --port "${PORT}" \
-  --attention-backend triton \
-  --speculative-algorithm EAGLE3 \
-  --speculative-draft-model-path "${DRAFT_PATH}" \
-  --speculative-draft-load-format safetensors \
-  --speculative-num-steps 3 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-eagle-topk 1 \
-  --disable-cuda-graph \
-  --disable-piecewise-cuda-graph \
-  --disable-cuda-graph-padding \
-  --disable-flashinfer-autotune \
-  --disable-overlap-schedule \
-  --skip-server-warmup \
-  --disable-custom-all-reduce \
-  --mem-fraction-static 0.35 \
-  --max-running-requests 1 \
-  --schedule-policy fcfs \
-  "${EXTRA_ARGS[@]}" >"${LOG_PATH}" 2>&1 &
+' bash "${LAUNCH_ARGS[@]}" >"${LOG_PATH}" 2>&1 &
 SRVPID=$!
 
 READY=0
@@ -120,6 +144,9 @@ if [ "${READY}" -eq 1 ]; then
     -e PROBE_PROMPT="${PROMPT}" \
     -e PROBE_MAX_NEW_TOKENS="${MAX_NEW_TOKENS}" \
     -e PROBE_REQUEST_TIMEOUT="${REQUEST_TIMEOUT}" \
+    -e PROBE_TEMPERATURE="${TEMPERATURE}" \
+    -e PROBE_TOP_P="${TOP_P}" \
+    -e PROBE_TOP_K="${TOP_K}" \
     thoth \
     bash -lc "
       python3 - <<'PY'
@@ -127,12 +154,18 @@ import json
 import os
 import urllib.request
 
+sampling_params = {
+    'temperature': float(os.environ['PROBE_TEMPERATURE']),
+    'max_new_tokens': int(os.environ['PROBE_MAX_NEW_TOKENS']),
+}
+if os.environ.get('PROBE_TOP_P'):
+    sampling_params['top_p'] = float(os.environ['PROBE_TOP_P'])
+if os.environ.get('PROBE_TOP_K'):
+    sampling_params['top_k'] = int(os.environ['PROBE_TOP_K'])
+
 payload = {
     'text': os.environ['PROBE_PROMPT'],
-    'sampling_params': {
-        'temperature': 0.0,
-        'max_new_tokens': int(os.environ['PROBE_MAX_NEW_TOKENS']),
-    },
+    'sampling_params': sampling_params,
 }
 req = urllib.request.Request(
     'http://127.0.0.1:${PORT}/generate',

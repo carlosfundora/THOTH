@@ -10,15 +10,15 @@ context only. It no longer reflects the current runtime truth.
 Current source of truth:
 
 - validated OpenCoder Docker path with `local EAGLE3 + tq4 + Triton + radix`
-- validated Bonsai 1.7B Docker path without `tq4`
-- active blocker: Bonsai 1.7B `tq4` during the first real request
+- validated Bonsai 1.7B Docker path with `local EAGLE3 + tq4 + Triton + radix`
+- next target: simultaneous `EAGLE3` behavior on both the draft and generation models
 
 See:
 
 - [`README.md`](./README.md)
 - [`validation-results.md`](./validation-results.md)
 - [`/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md)
-- [`/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md)
+- [`/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-docker-2026-04-03.md)
 
 ## 1. Context & Objectives
 The goal of this porting session was to achieve a functioning SGLang environment on ROCm capable of utilizing speculative decoding (EAGLE3/STANDALONE) alongside TurboQuant KV cache compression (`tq4`), with explicit support for 1-bit PrismML/Bonsai quantized GGUF artifacts. 
