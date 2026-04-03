@@ -1,6 +1,6 @@
 # THOTH/forks Manifest
 
-> 23 submodules — OpenCoder + TurboQuant + EAGLE + Medusa on gfx1031 (RX 6700 XT)
+> 24 submodules — OpenCoder + TurboQuant + EAGLE + P-EAGLE + Medusa on gfx1031 (RX 6700 XT)
 > See [docs/research/donor-assessment.md](../docs/research/donor-assessment.md) for detailed per-fork analysis.
 
 ## Fork Registry
@@ -17,6 +17,7 @@
 | **turboquant-1** | Reference | Alternative/early TurboQuant fork. | Check |
 | **dendrite** | Runtime architecture donor | Direct quantized-page runtime (`PageFormat::TurboQuant4Bit`). Avoids dequant-then-attend. 3.88x memory reduction. | Check |
 | **EAGLE** | Speculative decoding | EAGLE-3 draft model — best-in-class replacement for Medusa. | Apache-2.0 |
+| **speculators** | P-EAGLE training donor | vLLM speculative-decoding library. Canonical P-EAGLE training/model-definition source for `mask_hidden`, mask token logic, COD sampling, and parallel input construction. | Apache-2.0 |
 | **Medusa** | Speculative decoding | Medusa multi-head speculative decoding. Current 1.5B draft. | Apache-2.0 |
 | **SpecForge** | Draft model trainer | Official EAGLE draft-model trainer (works with SGLang). | Apache-2.0 |
 | **ATLAS** | Long-term goal | Together.ai adaptive speculative decoding framework. | Check |
@@ -35,3 +36,18 @@
 
 ## Auto-generated on 2026-03-31
 ## Project goal: Frozen 8B OpenCoder target + TurboQuant KV + adaptive EAGLE/Medusa draft on RX 6700 XT (gfx1031)
+
+## P-EAGLE Canonical Sources
+
+- `forks/EAGLE`
+  - upstream: `https://github.com/SafeAILab/EAGLE`
+  - role: canonical EAGLE-1/2/3 reference architecture and training baseline
+- `forks/speculators`
+  - upstream: `https://github.com/vllm-project/speculators`
+  - role: canonical P-EAGLE training/model-definition donor
+- `forks/vllm`
+  - upstream: `https://github.com/vllm-project/vllm`
+  - role: production inference reference for unified parallel drafting / P-EAGLE serving integration
+- `forks/SpecForge`
+  - upstream: `https://github.com/sgl-project/SpecForge`
+  - role: THOTH training integration base for local OpenCoder/Bonsai EAGLE and P-EAGLE heads

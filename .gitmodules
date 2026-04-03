@@ -90,3 +90,7 @@
 	path = forks/vllm-turboquant
 	url = https://github.com/carlosfundora/vllm-turboquant.git
 	branch = main
+[submodule "forks/speculators"]
+	path = forks/speculators
+	url = https://github.com/vllm-project/speculators.git
+	branch = main
