@@ -52,9 +52,8 @@ Response summary:
 
 ## Artifacts
 
-- [`20260402T161700_sglang_opcoder15_eagle3.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_sglang_opcoder15_eagle3.log)
-- [`20260402T161700_opcoder15_eagle3_generate_response.json`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_response.json)
-- [`20260402T161700_opcoder15_eagle3_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_resources.jsonl)
+- [`20260402T161700_opcoder15_eagle3_generate_response.json`](/home/local/Projects/THOTH/logs/20260402T161700_opcoder15_eagle3_generate_response.json)
+- [`20260402T161700_opcoder15_eagle3_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T161700_opcoder15_eagle3_generate_resources.jsonl)
 - [`opencoder-1.5b-eagle3-local.json`](/home/local/Projects/THOTH/forks/SpecForge/configs/opencoder-1.5b-eagle3-local.json)
 
 ## Notes

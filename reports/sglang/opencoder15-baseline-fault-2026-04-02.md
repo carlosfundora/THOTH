@@ -39,8 +39,7 @@ This is the same ROCm-class failure family already seen in the unstable `tq4` an
 
 ## Artifacts
 
-- [`20260402T161900_sglang_opcoder15_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_sglang_opcoder15_baseline.log)
-- [`20260402T161900_opcoder15_baseline_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_opcoder15_baseline_generate_resources.jsonl)
+- [`20260402T161900_opcoder15_baseline_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T161900_opcoder15_baseline_generate_resources.jsonl)
 
 ## Notes
 

@@ -50,6 +50,13 @@ This means SGLang is now a live ROCm target in THOTH, not just a future plan.
   - draft: `OpenCoder-1.5B-EAGLE3-local`
   - algorithm: true `EAGLE3`
   - result: `/generate` succeeded and returned speculative metrics
+- A fresh Docker validation on `2026-04-03` proves the reduced runtime path:
+  - target: `OpenCoder-1.5B-Instruct`
+  - draft: local `OpenCoder-1.5B-EAGLE3`
+  - `--kv-cache-dtype tq4`
+  - attention backend: `triton`
+  - radix enabled
+  - result: `POST /generate` returned `200 OK`
 
 ### Docker safety and backend recovery
 
@@ -60,7 +67,7 @@ This means SGLang is now a live ROCm target in THOTH, not just a future plan.
 
 ## Runtime Matrix
 
-Validated inside the `thoth` container on `2026-04-02`:
+Validated inside the `thoth` container:
 
 - Container image: `thoth:latest`
 - Python: `3.12.3`
@@ -76,6 +83,33 @@ Validated inside the `thoth` container on `2026-04-02`:
 - ROCm agent target exposed in-container: `gfx1030`
 - Physical card reported by `rocm-smi`: `gfx1031`
 - `aiter`: not installed in the container runtime
+
+## Validated Docker Paths
+
+Current validated runtime paths:
+
+- `OpenCoder-1.5B-Instruct + local EAGLE3 + tq4 + Triton + radix`
+  - proven in Docker on `2026-04-03`
+  - request returned `200 OK`
+  - short deterministic run produced:
+    - text: `Write a test for this function using the`
+    - `completion_tokens=8`
+    - `e2e_latency=131.27s`
+    - `spec_draft_token_num=21`
+  - peak sampled resources:
+    - container memory: `9.85 GiB`
+    - GPU junction: `52 C`
+    - VRAM allocation: `62%`
+  - report: [`opencoder15-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md)
+
+- `Bonsai-1.7B GGUF + local EAGLE3 + Triton + radix`
+  - proven in Docker on `2026-04-03`
+  - request returned `200 OK`
+  - report: [`validation-results.md`](./validation-results.md)
+
+- `Bonsai-1.7B GGUF + local EAGLE3 + tq4 + Triton + radix`
+  - still blocked on the first real request during draft extend
+  - current blocker report: [`bonsai17-eagle3-tq4-blocker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md)
 
 ## Important Constraint: Real EAGLE Requires a Real EAGLE Draft
 
@@ -96,7 +130,7 @@ All active SGLang validation is happening in the THOTH Docker container, not on 
 ```bash
 docker exec thoth bash -lc '
   cd /workspace/thoth/forks/sglang &&
-  source .venv-hephaestion/bin/activate &&
+  source .venv-sglang/bin/activate &&
   export HSA_OVERRIDE_GFX_VERSION=10.3.0 &&
   export PYTORCH_ROCM_ARCH=gfx1030 &&
   export PYTHONPATH=/workspace/thoth/forks/sglang/python:/workspace/thoth/forks/sglang/sgl-kernel/python &&
@@ -106,11 +140,10 @@ docker exec thoth bash -lc '
 
 ## Immediate Next Steps
 
-1. Keep the recovered OpenCoder 8B baseline as the reference-good SGLang path
-2. Fix the remaining ROCm `indexSelectSmallIndex` fault that still appears on fresh `tq4` and `STANDALONE` requests
-3. Re-run `tq4` and `STANDALONE` after that patch with short benchmark/resource captures
-4. Use the local OpenCoder 1.5B proof draft as the runtime foothold, then train a real OpenCoder draft artifact
-5. Move from runtime recovery to SpecForge and Medusa training only after the request path is stable enough for repeated benchmarking
+1. Keep `OpenCoder-1.5B + local EAGLE3 + tq4` as the regression canary for the synced branch
+2. Keep `Bonsai-1.7B + EAGLE3` without `tq4` as the 1-bit non-`tq` canary
+3. Recover `Bonsai-1.7B + EAGLE3 + tq4` by harvesting donor runtime patterns from `dendrite`, `turboquant_plus`, and `llama-turboquant`
+4. Only widen back out to OpenCoder 8B, Bonsai 4B, or training after the Bonsai `tq4` request path is green
 
 ## Notes
 

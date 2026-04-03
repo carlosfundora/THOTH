@@ -2,7 +2,7 @@
 
 > Goal: TurboQuant KV cache + speculative decoding on RX 6700 XT (gfx1031)
 > Frozen 8B target (OpenCoder) + adaptive 1.5B draft (Medusa → EAGLE-3)
-> Last updated: 2026-04-01
+> Last updated: 2026-04-03
 
 ---
 
@@ -127,7 +127,7 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 3. Add Prism GGUF compatibility shims for Bonsai `Q1_0` / `Q1_0_G128`
 4. Add HIP GGUF fallback behavior so ROCm can load quantized GGUF models without CUDA-only kernels
 5. Relax ROCm GGUF gating in model config so SGLang no longer rejects the format up front
-6. Stand up a Docker-first `.venv-hephaestion` inside the THOTH container for all SGLang runtime work
+6. Stand up a Docker-first `.venv-sglang` inside the THOTH container for all SGLang runtime work
 
 **Current live validation track**:
 1. Bonsai 1.7B GGUF on SGLang for end-to-end 1-bit server proof
@@ -141,11 +141,14 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
 - The first OpenCoder EAGLE3 load failure was a bad local weights checkout, not a ROCm port failure:
   - `model-00002-of-00004.safetensors` was corrupt and had to be re-fetched from Git LFS
 - There is no local trained OpenCoder EAGLE checkpoint under `Projects/models`
-- Bonsai 1-bit SGLang serve needs a dedicated rerun with the GPU freed, because the concurrent OpenCoder load starved available VRAM
+- The validated Docker runtime state is now:
+  - `OpenCoder-1.5B + local EAGLE3 + tq4 + Triton + radix` works and returns `200 OK`
+  - `Bonsai-1.7B + local EAGLE3 + Triton + radix` works and returns `200 OK`
+  - `Bonsai-1.7B + local EAGLE3 + tq4 + Triton + radix` still faults on the first real request
 
 **Success criteria**:
 - [ ] Bonsai `Q1_0` serves end-to-end in SGLang on ROCm
-- [ ] OpenCoder `tq4` KV cache works end-to-end in SGLang
+- [x] OpenCoder local `EAGLE3` + `tq4` works end-to-end in SGLang
 - [ ] OpenCoder runtime reaches a true EAGLE-compatible serve path or fails with a precise model-structure constraint
 - [ ] Training path is ready to produce a real OpenCoder EAGLE draft artifact once runtime proof is stable
 

@@ -1,8 +1,24 @@
 # SGLang Port Progress: EAGLE3, TurboQuant & 1-bit GGUF Compatibility
 
-**Status**: Work in Progress (Blocked by Draft-Side Scheduler Stall)
+**Status**: Historical snapshot, superseded by [`README.md`](./README.md) and [`validation-results.md`](./validation-results.md)
 **Hardware Target**: AMD RDNA2 (gfx1030)
-**Last Updated**: 2026-04-01
+**Last Updated**: 2026-04-03
+
+This document captures an earlier bring-up phase and is retained for historical
+context only. It no longer reflects the current runtime truth.
+
+Current source of truth:
+
+- validated OpenCoder Docker path with `local EAGLE3 + tq4 + Triton + radix`
+- validated Bonsai 1.7B Docker path without `tq4`
+- active blocker: Bonsai 1.7B `tq4` during the first real request
+
+See:
+
+- [`README.md`](./README.md)
+- [`validation-results.md`](./validation-results.md)
+- [`/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md)
+- [`/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md)
 
 ## 1. Context & Objectives
 The goal of this porting session was to achieve a functioning SGLang environment on ROCm capable of utilizing speculative decoding (EAGLE3/STANDALONE) alongside TurboQuant KV cache compression (`tq4`), with explicit support for 1-bit PrismML/Bonsai quantized GGUF artifacts. 

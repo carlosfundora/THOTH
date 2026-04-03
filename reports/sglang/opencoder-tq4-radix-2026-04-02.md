@@ -17,10 +17,10 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 | Check | Result | Evidence |
 |------|--------|----------|
-| OpenCoder 8B + `tq4` server boot | ✅ | [`20260402T110500_sglang_opencoder8b_tq4.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4.log) |
-| `TurboQuant MHA KV Pool` init | ✅ | same log |
-| `/health` | ✅ | same log |
-| First `/generate` | ❌ | same log |
+| OpenCoder 8B + `tq4` server boot | ✅ | [`20260402T110500_sglang_opencoder8b_tq4_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T110500_sglang_opencoder8b_tq4_resources.jsonl) |
+| `TurboQuant MHA KV Pool` init | ✅ | same resource capture |
+| `/health` | ✅ | same resource capture |
+| First `/generate` | ❌ | same resource capture |
 
 ## Current Blocker
 
@@ -30,5 +30,4 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 Primary evidence:
 
-- [`20260402T110500_sglang_opencoder8b_tq4.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4.log)
-- [`20260402T110500_sglang_opencoder8b_tq4_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4_resources.jsonl)
+- [`20260402T110500_sglang_opencoder8b_tq4_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T110500_sglang_opencoder8b_tq4_resources.jsonl)

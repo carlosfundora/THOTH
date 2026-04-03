@@ -6,10 +6,10 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 | Check | Result | Evidence |
 |------|--------|----------|
-| target model load | ✅ | [`20260402T111000_sglang_opencoder8b_standalone.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone.log) |
-| draft model load | ✅ | same log |
-| `/health` | ✅ | same log |
-| First `/generate` | ❌ | same log |
+| target model load | ✅ | [`20260402T111000_sglang_opencoder8b_standalone_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T111000_sglang_opencoder8b_standalone_resources.jsonl) |
+| draft model load | ✅ | same resource capture |
+| `/health` | ✅ | same resource capture |
+| First `/generate` | ❌ | same resource capture |
 
 ## Current Blocker
 
@@ -19,5 +19,4 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 Primary evidence:
 
-- [`20260402T111000_sglang_opencoder8b_standalone.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone.log)
-- [`20260402T111000_sglang_opencoder8b_standalone_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone_resources.jsonl)
+- [`20260402T111000_sglang_opencoder8b_standalone_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T111000_sglang_opencoder8b_standalone_resources.jsonl)

@@ -6,16 +6,16 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 | Check | Result | Evidence |
 |------|--------|----------|
-| OpenCoder 8B server boot | ✅ | [`20260402T110300_sglang_opencoder8b_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log) |
-| `/health` | ✅ | same log |
-| First `/generate` | ✅ | same log |
+| OpenCoder 8B server boot | ✅ | [`20260402T110300_sglang_opencoder8b_baseline_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl) |
+| `/health` | ✅ | same resource capture |
+| First `/generate` | ✅ | same resource capture |
 
 ## Notes
 
 - This is the current reference-good SGLang ROCm path in THOTH.
 - The request completed with `POST /generate` `200`.
 - Fresh resource sampling is in:
-  [`20260402T110300_sglang_opencoder8b_baseline_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl)
+  [`20260402T110300_sglang_opencoder8b_baseline_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl)
 
 ## Output Snapshot
 
@@ -25,4 +25,4 @@ Source: `/home/local/Projects/THOTH/forks/sglang`
 
 Primary evidence:
 
-- [`20260402T110300_sglang_opencoder8b_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log)
+- [`20260402T110300_sglang_opencoder8b_baseline_resources.jsonl`](/home/local/Projects/THOTH/logs/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl)

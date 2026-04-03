@@ -1,27 +1,29 @@
 # SGLang — Validation Results
 
-**Last Updated:** 2026-04-02  
-**Status:** Runtime recovery in progress; local `EAGLE3` proof achieved, baseline `tq4`, and `STANDALONE` still unstable  
+**Last Updated:** 2026-04-03  
+**Status:** Validated OpenCoder `tq4` local `EAGLE3` Docker path; Bonsai non-`tq` validated; Bonsai `tq4` still blocked  
 **Engine Role:** Primary target for true speculative decoding, EAGLE, TurboQuant serving, and training handoff
 
 ---
 
 ## Summary
 
-The SGLang ROCm port is no longer blocked at startup. The current state after
-fresh reruns is:
+The SGLang ROCm port is past the old startup-only phase. The current validated
+state is:
 
-- OpenCoder 8B baseline server boot works
-- OpenCoder 8B baseline `/health` works
-- OpenCoder 8B baseline `/generate` works
-- OpenCoder 1.5B local `EAGLE3` now works with a locally-built SpecForge draft
-- OpenCoder 1.5B matched non-EAGLE baseline still faults on the first real `/generate`
-- OpenCoder 8B `tq4` still crashes on the first real `/generate`
-- OpenCoder `STANDALONE` still crashes on the first real `/generate`
-- true `EAGLE3` is no longer blocked by missing local assets
+- `OpenCoder-1.5B + local EAGLE3 + tq4 + Triton + radix` works in Docker and returns `200 OK`
+- `Bonsai-1.7B + local EAGLE3 + Triton + radix` works in Docker and returns `200 OK`
+- `Bonsai-1.7B + local EAGLE3 + tq4 + Triton + radix` still faults on the first real request
 
-This is better than the earlier bring-up state, but it is not yet the full
-runtime gate needed for EAGLE or Medusa training.
+That means the synced branch can now carry one validated OpenCoder `tq4`
+speculative path and one validated Bonsai 1-bit speculative path, while keeping
+the active blocker narrowed to Bonsai `tq4`.
+
+Recent `main`-branch audit result:
+
+- `SpecForge` commit `aa2ebe6` is already present in `specforge/core/dflash.py`
+- `sglang` commit `e463f2bff` is already present in the TurboQuant feature files
+- no audit cherry-pick was needed; the remaining work is runtime correctness on top of the existing feature set
 
 ---
 
@@ -61,114 +63,67 @@ Validated outcomes:
 Primary evidence:
 
 - [`README.md`](./README.md)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log)
-
-### OpenCoder 8B Baseline
-
-Validated outcomes:
-
-1. server boot succeeds
-2. `/health` returns `200`
-3. first real `/generate` returns `200`
-4. baseline non-speculative generation is recovered on ROCm
-
-Primary evidence:
-
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline.log)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110300_sglang_opencoder8b_baseline_resources.jsonl)
 - [`/home/local/Projects/THOTH/reports/sglang/opencoder-baseline-2026-04-02.md`](/home/local/Projects/THOTH/reports/sglang/opencoder-baseline-2026-04-02.md)
 
-### OpenCoder 8B `tq4`
+### OpenCoder 1.5B Local `EAGLE3` + `tq4`
 
 Validated outcomes:
 
-1. server boot succeeds
-2. `TurboQuant MHA KV Pool` initializes
-3. `/health` returns `200`
-4. first real `/generate` still GPU-faults
+1. server boot succeeds in Docker
+2. `/model_info` returns `200`
+3. `/generate` returns `200`
+4. Triton stays active
+5. radix stays active
+6. `tq4` stays enabled on both target and draft workers
 
 Primary evidence:
 
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4.log)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T110500_sglang_opencoder8b_tq4_resources.jsonl)
-- [`/home/local/Projects/THOTH/reports/sglang/opencoder-tq4-radix-2026-04-02.md`](/home/local/Projects/THOTH/reports/sglang/opencoder-tq4-radix-2026-04-02.md)
+- [`/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-tq4-docker-2026-04-03.md)
+- [`/home/local/Projects/THOTH/logs/20260403T043111_opencoder15w_eagle3_tq4_ctx1k_short_p270_response.json`](/home/local/Projects/THOTH/logs/20260403T043111_opencoder15w_eagle3_tq4_ctx1k_short_p270_response.json)
+- [`/home/local/Projects/THOTH/logs/20260403T043111_opencoder15w_eagle3_tq4_ctx1k_short_p270_resources.jsonl`](/home/local/Projects/THOTH/logs/20260403T043111_opencoder15w_eagle3_tq4_ctx1k_short_p270_resources.jsonl)
 
-### OpenCoder `STANDALONE`
-
-Validated outcomes:
-
-1. target model loads
-2. draft model loads
-3. server reaches `/health` `200`
-4. first real `/generate` still GPU-faults on the speculative path
-
-Primary evidence:
-
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone.log)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T111000_sglang_opencoder8b_standalone_resources.jsonl)
-- [`/home/local/Projects/THOTH/reports/sglang/opencoder-standalone-2026-04-02.md`](/home/local/Projects/THOTH/reports/sglang/opencoder-standalone-2026-04-02.md)
-
-### True `EAGLE3`
+### Bonsai 1.7B Local `EAGLE3`
 
 Validated outcomes:
 
-1. a local SpecForge-built OpenCoder 1.5B draft artifact loads as `LlamaForCausalLMEagle3`
-2. SGLang launches with `--speculative-algorithm EAGLE3`
-3. `/health` returns `200`
+1. GGUF target boots in Docker
+2. local draft boots in Docker
+3. `/model_info` returns `200`
 4. `/generate` returns `200`
-5. speculative metrics are exposed in the response
-
-Measured request:
-
-- completion tokens: `64`
-- end-to-end latency: `54.50 s`
-- effective output rate: `1.17 tok/s`
-- spec accept rate: `0.3333`
-- accepted draft tokens: `32 / 96`
-
-Supporting evidence:
-
-- [`README.md`](./README.md)
-- [`/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-local-2026-04-02.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-eagle3-local-2026-04-02.md)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_sglang_opcoder15_eagle3.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_sglang_opcoder15_eagle3.log)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_response.json`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_response.json)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161700_opcoder15_eagle3_generate_resources.jsonl)
-
-### OpenCoder 1.5B Matched Baseline
-
-Validated outcomes:
-
-1. server boot succeeds
-2. `/health` returns `200`
-3. first real `/generate` still aborts with the ROCm `indexSelectSmallIndex ... Half` fault
+5. Triton stays active
+6. radix stays active
 
 Primary evidence:
 
-- [`/home/local/Projects/THOTH/reports/sglang/opencoder15-baseline-fault-2026-04-02.md`](/home/local/Projects/THOTH/reports/sglang/opencoder15-baseline-fault-2026-04-02.md)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_sglang_opcoder15_baseline.log`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_sglang_opcoder15_baseline.log)
-- [`/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_opcoder15_baseline_generate_resources.jsonl`](/home/local/Projects/THOTH/logs/hephaestion/20260402T161900_opcoder15_baseline_generate_resources.jsonl)
+- [`/home/local/Projects/THOTH/logs/20260403T041132_sglang_bonsai17_eagle3_embedfix_response.json`](/home/local/Projects/THOTH/logs/20260403T041132_sglang_bonsai17_eagle3_embedfix_response.json)
+- [`/home/local/Projects/THOTH/logs/20260403T041132_sglang_bonsai17_eagle3_embedfix_resources.jsonl`](/home/local/Projects/THOTH/logs/20260403T041132_sglang_bonsai17_eagle3_embedfix_resources.jsonl)
+
+### Bonsai 1.7B Local `EAGLE3` + `tq4`
+
+Validated outcomes:
+
+1. GGUF target boots in Docker
+2. local draft boots in Docker
+3. `/model_info` returns `200`
+4. target extend completes
+5. first real request still aborts during draft extend / packed-KV handling
+
+Primary evidence:
+
+- [`/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md`](/home/local/Projects/THOTH/reports/sglang/bonsai17-eagle3-tq4-blocker-2026-04-03.md)
+- [`/home/local/Projects/THOTH/logs/20260403T045050_bonsai17_eagle3_tq4_ctx1k_rowembed.log`](/home/local/Projects/THOTH/logs/20260403T045050_bonsai17_eagle3_tq4_ctx1k_rowembed.log)
+- [`/home/local/Projects/THOTH/logs/20260403T045050_bonsai17_eagle3_tq4_ctx1k_rowembed_resources.jsonl`](/home/local/Projects/THOTH/logs/20260403T045050_bonsai17_eagle3_tq4_ctx1k_rowembed_resources.jsonl)
 
 ---
 
 ## Current Blockers
 
-### TurboQuant
+### Bonsai `tq4`
 
 - failure: `HSA_STATUS_ERROR_EXCEPTION`
 - visible kernel: `indexSelectSmallIndex ... Half`
-- current path still points back into the ROCm TurboQuant write/compression flow
-
-### Speculative Decoding
-
-- failure: `HSA_STATUS_ERROR_EXCEPTION`
-- visible kernel: `indexSelectSmallIndex ... Half`
-- crash happens after `/health`, during the first real speculative request
-
-### Baseline vs EAGLE
-
-- local `EAGLE3` proof now exists
-- the matched OpenCoder 1.5B baseline request still faults
-- the next blocker is no longer asset availability; it is baseline/runtime consistency across decode paths
+- current trace points into the TurboQuant packed-KV compression/write path
+- the queue is already poisoned by the time the draft extend begins
 
 ---
 
@@ -178,14 +133,9 @@ Primary evidence:
 |------|--------|-------|
 | ROCm server boot | ✅ | runtime boots in Docker |
 | Triton fallback policy | ✅ | `aiter` auto-selection fixed |
-| OpenCoder baseline startup | ✅ | `/health` passes |
-| OpenCoder baseline generation | ✅ | fresh `/generate` succeeded |
-| OpenCoder `tq4` startup | ✅ | pool initializes, `/health` passes |
-| OpenCoder `tq4` generation | ❌ | first request still faults |
-| `STANDALONE` startup | ✅ | target + draft load |
-| `STANDALONE` generation | ❌ | first request still faults |
-| local true `EAGLE3` proof | ✅ | OpenCoder 1.5B local draft generated and served |
-| OpenCoder 1.5B matched baseline | ❌ | first request still faults |
+| OpenCoder 1.5B local `EAGLE3` | ✅ | `tq4`, Triton, radix, Docker request path validated |
+| Bonsai 1.7B local `EAGLE3` | ✅ | non-`tq` 1-bit path validated |
+| Bonsai 1.7B local `EAGLE3` + `tq4` | ❌ | first request still faults |
 
 ---
 
@@ -193,9 +143,7 @@ Primary evidence:
 
 The next required sequence is now:
 
-1. isolate and patch the remaining `indexSelectSmallIndex` ROCm crash in the
-   remaining non-EAGLE request path
-2. re-run OpenCoder `tq4`
-3. re-run OpenCoder `STANDALONE`
-4. improve the local OpenCoder EAGLE draft from proof artifact to trained artifact
-5. only then move into Medusa training artifacts
+1. sync the validated OpenCoder and Bonsai non-`tq` runtime state
+2. harvest the donor runtime pattern for Bonsai `tq4` from `dendrite`, `turboquant_plus`, and `llama-turboquant`
+3. re-run `Bonsai-1.7B + EAGLE3 + tq4` with the donor-selected packed-KV write strategy
+4. only then widen back out to OpenCoder 8B, Bonsai 4B, or training
