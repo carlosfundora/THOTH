@@ -1,6 +1,6 @@
 # THOTH/forks Manifest
 
-> 24 submodules — OpenCoder + TurboQuant + EAGLE + P-EAGLE + Medusa on gfx1031 (RX 6700 XT)
+> Runtime and research donors for OpenCoder + TurboQuant + EAGLE/P-EAGLE on gfx1031
 > See [docs/research/donor-assessment.md](../docs/research/donor-assessment.md) for detailed per-fork analysis.
 
 ## Fork Registry
@@ -24,15 +24,8 @@
 | **llama.cpp** | Reference baseline | Base llama.cpp (reference + Vulkan/HIP backend). Compare against TurboQuant. | MIT |
 | **unsloth** | Training | 4-bit QLoRA training — fast 1.5B Medusa/EAGLE head training on 12 GB. | Apache-2.0 |
 | **bitpolar** | KV utilities | Vector quantization & bit-packing library. | Check |
-| **aotriton** | ⚠️ Blocker map | AMD Triton — no gfx103x in recent releases. PyTorch FlashAttention path blocker. | MIT |
-| **hip** | ROCm core | AMD HIP runtime & compiler. Core for any TurboQuant HIP kernels. | MIT |
-| **rocBLAS** | ROCm math | GEMM/attention kernels. Missing gfx1031 Tensile kernels → use override. | MIT |
-| **rocm-install-on-linux** | ROCm setup | Official install scripts + patch examples for consumer GPUs. | MIT |
-| **rocm-libraries** | ROCm math | Consolidated math libraries (rocBLAS, MIOpen, etc.). 13 GB. | MIT |
-| **Tensile** | ROCm kernels | AMD kernel generator (used by rocBLAS). Missing gfx1031 precompiled kernels. | MIT |
-| **TheRock** | ROCm build system | New open build system. Has `gfx103X-all` target plumbing. | MIT |
 
-> **rocm_sdk_builder** is maintained outside THOTH at `/home/local/Projects/build/rocm_sdk_builder`. Tested on gfx1031, formal patch system, vLLM build flows. See [build/INDEX.md](../../build/INDEX.md).
+> Build-oriented sources such as ROCm, Triton, PyTorch, TorchVision, and compiler/toolchain repos now live under [`THOTH/build-resources`](../build-resources/README.md).
 
 ## Auto-generated on 2026-03-31
 ## Project goal: Frozen 8B OpenCoder target + TurboQuant KV + adaptive EAGLE/Medusa draft on RX 6700 XT (gfx1031)

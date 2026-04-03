@@ -137,7 +137,7 @@
 
 ### ROCm/TheRock
 
-- **Local fork**: `forks/TheRock`
+- **Local fork**: `build-resources/TheRock`
 - **Value**: Not a finished solution, but important for PyTorch-side build logic
 - **What to steal**:
   - Target family plumbing: `gfx103X-all`, `gfx103X-dgpu`
@@ -146,7 +146,7 @@
 
 ### ROCm/aotriton
 
-- **Local fork**: `forks/aotriton`
+- **Local fork**: `build-resources/aotriton`
 - **Value**: ⚠️ **Blocker map, not a donor**
 - **Status**: Recent releases target gfx950, gfx1201, gfx1101, gfx1151, gfx1150, gfx1200 — **not gfx103x**
 - **Impact**: AOTriton is what PyTorch uses for SDPA/FlashAttention paths → gfx1031 PyTorch route remains a patching project

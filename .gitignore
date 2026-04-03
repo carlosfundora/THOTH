@@ -132,6 +132,15 @@ forks/pytorch
 forks/rocm_sdk_builder
 forks/unsloth-studio
 
+# Local build-resource trees (tracked submodules live separately)
+build-resources/aiter
+build-resources/bitsandbytes-rocm
+build-resources/flash-attention
+build-resources/pytorch
+build-resources/rocm_sdk_builder
+build-resources/triton
+build-resources/vision
+
 # Hephaestion build artifacts (keep structure, ignore bulk logs)
 logs/hephaestion/*.log
 patches/hephaestion/*.patch

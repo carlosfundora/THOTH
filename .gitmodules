@@ -3,7 +3,7 @@
 	url = https://github.com/carlosfundora/turboquant.git
 	branch = main
 [submodule "forks/aotriton"]
-	path = forks/aotriton
+	path = build-resources/aotriton
 	url = https://github.com/carlosfundora/aotriton.git
 	branch = main
 [submodule "forks/ATLAS"]
@@ -23,7 +23,7 @@
 	url = https://github.com/carlosfundora/EAGLE.git
 	branch = main
 [submodule "forks/hip"]
-	path = forks/hip
+	path = build-resources/hip
 	url = https://github.com/carlosfundora/hip.git
 	branch = develop
 [submodule "forks/llama.cpp"]
@@ -39,15 +39,15 @@
 	url = https://github.com/carlosfundora/Medusa.git
 	branch = main
 [submodule "forks/rocBLAS"]
-	path = forks/rocBLAS
+	path = build-resources/rocBLAS
 	url = https://github.com/carlosfundora/rocBLAS.git
 	branch = develop_deprecated
 [submodule "forks/rocm-install-on-linux"]
-	path = forks/rocm-install-on-linux
+	path = build-resources/rocm-install-on-linux
 	url = https://github.com/carlosfundora/rocm-install-on-linux.git
 	branch = develop
 [submodule "forks/rocm-libraries"]
-	path = forks/rocm-libraries
+	path = build-resources/rocm-libraries
 	url = https://github.com/carlosfundora/rocm-libraries.git
 	branch = develop
 [submodule "forks/sglang"]
@@ -59,11 +59,11 @@
 	url = https://github.com/carlosfundora/SpecForge.git
 	branch = main
 [submodule "forks/Tensile"]
-	path = forks/Tensile
+	path = build-resources/Tensile
 	url = https://github.com/carlosfundora/Tensile.git
 	branch = develop_deprecated
 [submodule "forks/TheRock"]
-	path = forks/TheRock
+	path = build-resources/TheRock
 	url = https://github.com/carlosfundora/TheRock.git
 	branch = main
 [submodule "forks/turboquant-1"]

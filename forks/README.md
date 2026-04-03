@@ -1,4 +1,4 @@
-# THOTH/forks – OpenCoder + TurboQuant + EAGLE + Medusa on gfx1031 (RX 6700 XT)
+# THOTH/forks – Runtime And Research Donors
 
 Personal research fork collection for a full ATLAS-style speculative system with TurboQuant KV cache on consumer AMD hardware.
 
@@ -31,14 +31,21 @@ See [docs/attack-plan.md](../docs/attack-plan.md) for full experiment definition
 - [Donor Assessment](../docs/research/donor-assessment.md) — per-fork shopping list
 - [gfx1031 Compatibility](../docs/research/gfx1031-rocm-compat.md) — override hacks, breakage patterns
 - [Manifest](manifest.md) — full fork registry with donor roles
+- [Build Resources](../build-resources/README.md) — relocated toolchain, ROCm, PyTorch, and compiler sources
 
-## Shared Build Infrastructure
+## Build Resource Split
 
-THOTH keeps research forks under `THOTH/forks`, but shared build infrastructure lives under `/home/local/Projects/build`.
+`THOTH/forks` now holds runtime and research donors.
 
-- `rocm_sdk_builder` at `/home/local/Projects/build/rocm_sdk_builder` (tested on gfx1031)
-- System-facing build tools at `/home/local/Projects/build/bin`
-- Canonical catalog at `/home/local/Projects/build/INDEX.md`
+Shared build sources that used to be mixed into `forks/` have been moved to
+[`THOTH/build-resources`](../build-resources/README.md), including ROCm,
+PyTorch, Triton, TorchVision, and compiler-oriented sources.
+
+External system-level build tooling still lives under `/home/local/Projects/build`.
+
+- `build-resources/` — local source trees for build-oriented repos
+- `/home/local/Projects/build/bin` — system-facing build tools
+- `/home/local/Projects/build/INDEX.md` — external build catalog
 
 ## Quick Links
 - Primary build target: `llama-turboquant` (HIP + HSA_OVERRIDE=10.3.0)
