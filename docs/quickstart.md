@@ -27,6 +27,12 @@ For local SGLang work, the supported entrypoint is:
 /home/local/Projects/THOTH/forks/sglang/.venv-sglang/bin/python -m sglang.launch_server
 ```
 
+For host-side P-EAGLE training, the supported interpreter is:
+
+```bash
+/home/local/python/.venv-pytorch-rocm/bin/python
+```
+
 ## Runtime / Training Repos
 
 - SGLang fork: `/home/local/Projects/THOTH/forks/sglang`
@@ -138,6 +144,9 @@ This wrapper:
 - uses THOTH’s local registry/cache defaults
 - points Bonsai training at `prism-ml/Bonsai-1.7B-unpacked`
 - can prepare ShareGPT automatically when the dataset file is missing
+- runs a host preflight before launching training:
+  - reports free RAM and GPU visibility
+  - detects and stops competing `llama-server`, `sglang`, and THOTH/SpecForge training jobs
 - supports a smoke profile that writes a sampled JSONL dataset for faster validation runs
 - uses `sdpa` for Bonsai smoke training on this ROCm box
 - supports a low-VRAM smoke mode that trains only `mask_hidden`

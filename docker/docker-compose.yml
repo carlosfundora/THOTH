@@ -88,7 +88,7 @@ services:
 
     # Match the host namespace for debugging, but apply direct CPU limits below
     pid: host
-    cpus: "${THOTH_CPUS:-12}"
+    cpus: "${THOTH_CPUS:-18}"
     mem_limit: "${THOTH_MEM_LIMIT:-60G}"
 
     # Keep container running for interactive use

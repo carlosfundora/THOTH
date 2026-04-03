@@ -190,12 +190,15 @@ See [validation-results](engines/turboquant-plus/validation-results.md).
   - [`reports/sglang/live-install-cutover-2026-04-03.md`](../reports/sglang/live-install-cutover-2026-04-03.md)
 - Use the `bonsai17_smoke` launcher profile first when validating the training path end-to-end on gfx1030
   - the Triton large-vocab loss blocker is now fixed by chunked block-size selection in `specforge/core/loss.py`
+  - the parallel warm-start upgrade path must explicitly zero any missing `mask_hidden` tensor when loading older Bonsai EAGLE-3 checkpoints
+  - the active parallel-debug gate is now: first non-finite tensor boundary in `OnlineEagle3Model`, not generic loss failure
   - the validated low-VRAM smoke path on this box is:
     - `sdpa` attention backend
     - `ttt_length=5`
     - `k_train=5`
     - `train_mask_hidden_only=true`
     - writable output path under `THOTH/artifacts/models/local/`
+  - every host-side training launch should retire competing THOTH/model-serving jobs before it starts
   - first smoke artifact is complete and reloads successfully:
     - `/home/local/Projects/THOTH/artifacts/models/local/Bonsai-1.7B-P-EAGLE-local-smoke/epoch_0_step_2`
   - current remaining gap is not framework bring-up; it is widening from the low-VRAM smoke mode to a broader full-parameter run without exceeding the ROCm memory budget

@@ -49,7 +49,7 @@ See `.env` for defaults. Key variables:
 - `HSA_OVERRIDE_GFX_VERSION=10.3.0` — Required for gfx1031
 - `GPU_TARGETS=gfx1030` — CMake target arch
 - `HIP_VISIBLE_DEVICES=0` — GPU selection
-- `THOTH_CPUS=12` — Host-enforced CPU cap for the runtime container
+- `THOTH_CPUS=18` — Host-enforced CPU cap for the runtime container during THOTH development and parity training checks
 - `THOTH_BUILD_JOBS=8` — Max parallel build jobs during image rebuilds
 - `HEPHAESTION_*` — Circuit-breaker thresholds for CPU, GPU, NVMe, and disk
 
