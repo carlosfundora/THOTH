@@ -6,6 +6,8 @@
 
 Quickstart / location map:
 - [`docs/quickstart.md`](quickstart.md)
+- Current sync assessment:
+  - [`docs/research/turbo-engine-sync-assessment-2026-04-04.md`](research/turbo-engine-sync-assessment-2026-04-04.md)
 
 ---
 

@@ -50,6 +50,25 @@
 
 ## Tier 2 — Serving Engine Donors
 
+### nisten/prism-ml-biturbo
+
+- **Branches reviewed**:
+  - `main` `be3adeb162f2c210c32209688e69d3461af432df`
+  - `optimize` `badc6917c85123759d02b6561c6f0f059b40fa89`
+- **License base**: llama.cpp-derived fork, verify exact inherited licensing before copying
+- **Value**: strongest new public `llama.cpp`-side Prism/Bonsai + TurboQuant donor found in this review
+- **What it adds**:
+  - Prism/Bonsai `Q1_0_g128` support on PrismML's llama.cpp base
+  - `TBQ4_0` KV cache quantization with CUDA quantize + dequantize
+  - dp4a path for non-RTX Turing GPUs
+  - `optimize` branch adds ggerganov's Hadamard rotation foundation port
+- **Why it matters**: this is a real public CUDA-side implementation of Prism 1-bit plus TurboQuant on a llama.cpp base, not just a demo wrapper
+- **Limits**:
+  - CUDA-first, not a ROCm serving answer
+  - not a `sglang` donor
+  - still narrower than THOTH's deployed `sglang` combined path
+- **Verdict**: donor/reference only. Use selectively for `llama.cpp` ideas if current `TheTom` upstream still lacks a required Bonsai/TurboQuant behavior.
+
 ### vLLM PR #38280 (vllm-project/vllm)
 
 - **Local fork**: `forks/vllm`
